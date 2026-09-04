@@ -1,14 +1,45 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod/v4';
-import { protectedProcedure, publicProcedure, router } from '../trpc.js';
+import { generateId } from 'lucia';
+import {
+  protectedProcedure,
+  publicAuthProcedure,
+  publicProcedure,
+  router,
+} from '../trpc.js';
 import db from '../db/index.js';
 import { getUserInvitationsByEmail } from '../db/user-db.js';
-import { lucia } from '../auth.js';
+import { createUserSessionCookie, lucia } from '../auth.js';
 import { userSettingsValidator } from '@tapiz/board-commons/validators/user-settings.validator.js';
 import { withDefaultUserSettings } from '@tapiz/board-commons';
 import { generateApiToken, hashApiToken } from '../api-token.js';
 
 export const userRouter = router({
+  login: publicAuthProcedure
+    .input(z.object({ name: z.string().trim().min(1).max(50) }))
+    .mutation(async (req) => {
+      const userId = generateId(15);
+      // Anonymous accounts have no real email; synthesize a unique placeholder
+      // so the (NOT NULL, unique) email column keeps working without a migration.
+      const email = `${userId}@anonymous.tapiz`;
+
+      await db.user.createUser(userId, req.input.name, email);
+
+      const sessionCookie = await createUserSessionCookie(userId);
+
+      req.ctx.res.setCookie(sessionCookie.name, sessionCookie.value, {
+        ...sessionCookie.attributes,
+      });
+
+      const user = await db.user.getUser(userId);
+
+      return {
+        id: userId,
+        name: req.input.name,
+        picture: '',
+        settings: withDefaultUserSettings(user?.settings),
+      };
+    }),
   removeAccount: protectedProcedure.mutation(async (req) => {
     await lucia.invalidateUserSessions(req.ctx.user.sub);
 

@@ -44,7 +44,6 @@ export class AppComponent {
     'token',
     'top-voted',
     'voting',
-    'google',
     'user',
     'templates',
     'download',

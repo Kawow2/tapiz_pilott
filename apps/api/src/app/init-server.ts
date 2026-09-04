@@ -13,8 +13,7 @@ import {
 } from '@trpc/server/adapters/fastify';
 import { Server } from './server.js';
 import { setServer } from './global.js';
-import { createUserSessionCookie, getAuthUrl, lucia } from './auth.js';
-import { googleCallback } from './routers/auth-routes.js';
+import { createUserSessionCookie, lucia } from './auth.js';
 import { fileUpload } from './file-upload.js';
 import { registerTapizMcp } from './mcp.js';
 import { registerAgentSessionRoute } from './agent-auth.js';
@@ -115,14 +114,6 @@ fastify.register(async function (fastify) {
       );
     });
   });
-
-  fastify.get('/api/auth', async (req, rep) => {
-    const authUrl = await getAuthUrl(rep);
-
-    return rep.redirect(authUrl.href);
-  });
-
-  fastify.register(googleCallback);
 
   registerAgentSessionRoute(fastify, {
     environment: process.env,

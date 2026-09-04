@@ -1,7 +1,6 @@
 ## Prerequisites
 
 - Docker installed on your system.
-- Google OAuth credentials (for authentication).
 
 ## Installation & Configuration
 
@@ -22,10 +21,10 @@ Follow these steps to set up Tapiz using Docker:
 
    These defaults can be used in a local development environment, but **it is strongly recommended to change them** before deploying to production.
 
-3. **Set Up Google Authentication Credentials**  
-   Obtain your Google OAuth credentials by following [this guide](https://developers.google.com/identity/protocols/oauth2).  
-   Make sure the redirect URL is set to `http://localhost:8000/api/auth/callback`.  
-   Enter the `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` into the `.env` file under the appropriate fields.
+3. **Authentication**  
+   Tapiz does not require any external authentication provider. Users simply
+   enter a nickname on the login screen to start using the app; each nickname
+   creates a lightweight anonymous account and session.
 
 4. **Build and Run the Docker Containers**  
    After configuring your environment variables, build and start the Docker containers by running:

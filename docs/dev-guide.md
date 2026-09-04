@@ -36,7 +36,7 @@ The API exposes a Streamable HTTP MCP server for realtime board automation. See 
 ## AI screenshot sessions
 
 Local browser agents can create a normal session as an existing Tapiz user
-without completing Google login. Add the following to `.env` and restart the API:
+without going through the login screen. Add the following to `.env` and restart the API:
 
 ```dotenv
 AI_AGENT_LOGIN_ENABLED=true

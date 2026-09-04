@@ -28,6 +28,10 @@ export class UserApiService {
     return from(this.trpc.user.removeAccount.mutate());
   }
 
+  login(name: string) {
+    return from(this.trpc.user.login.mutate({ name }));
+  }
+
   user() {
     return from(this.trpc.user.user.query());
   }

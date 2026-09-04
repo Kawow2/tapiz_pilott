@@ -10,6 +10,11 @@ export const publicProcedure = t.procedure;
 
 export const tAuth = initTRPC.context<AppContext>().create();
 
+// Public procedure that still exposes the typed app context (req/res/user).
+// Used for endpoints that must set cookies (e.g. anonymous pseudo login)
+// without requiring an existing authenticated session.
+export const publicAuthProcedure = tAuth.procedure;
+
 const isAuthed = tAuth.middleware((opts) => {
   const { ctx } = opts;
   if (!ctx.user) {

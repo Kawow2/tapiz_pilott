@@ -110,8 +110,8 @@ export async function createUser(
   userId: string,
   name: string,
   email: string,
-  picture: string,
-  googleId: string,
+  picture?: string,
+  googleId?: string,
 ) {
   const insertedUser = await db
     .insert(schema.accounts)

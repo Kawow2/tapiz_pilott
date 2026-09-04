@@ -12,8 +12,6 @@ declare global {
       API_HOST: string;
       API_PORT: string;
       FRONTEND_URL: string;
-      GOOGLE_CLIENT_ID: string;
-      GOOGLE_CLIENT_SECRET: string;
       AI_AGENT_LOGIN_ENABLED?: string;
     }
   }

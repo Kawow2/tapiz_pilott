@@ -19,17 +19,29 @@
     productive meetings, retrospectives, and brainstorming.
   </p>
 
-  <div class="login-buttons">
+  <form
+    class="login-form"
+    (ngSubmit)="login()">
+    <label
+      class="field-label"
+      for="pseudo"
+      >Choose a nickname to get started</label
+    >
+    <input
+      id="pseudo"
+      class="pseudo-input"
+      type="text"
+      autocomplete="off"
+      maxlength="50"
+      placeholder="Your nickname"
+      [formControl]="name" />
+
     <button
       mat-raised-button
-      class="google"
-      (click)="loginGoogle()">
-      <div class="button-inner">
-        <mat-icon
-          class="google-icon"
-          svgIcon="google"></mat-icon>
-        Sign in with Google
-      </div>
+      class="submit"
+      type="submit"
+      [disabled]="loading()">
+      Continue
     </button>
-  </div>
+  </form>
 </div>
