@@ -5,7 +5,6 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -18,7 +17,7 @@ import { AuthService } from '../../../../services/auth.service';
   styleUrls: ['./login.component.scss'],
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatButtonModule, NgOptimizedImage],
+  imports: [ReactiveFormsModule, NgOptimizedImage],
 })
 export class LoginComponent {
   #userApiService = inject(UserApiService);

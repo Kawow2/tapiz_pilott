@@ -11,6 +11,14 @@ export const setPsqlClient = (psqlClient: postgres.Sql) => {
   });
 
   lucia = new Lucia(adapter, {
+    sessionCookie: {
+      attributes: {
+        // Only mark the cookie as Secure when the API is served over HTTPS.
+        // Over plain HTTP (local dev and the default Docker setup) a Secure
+        // cookie would be silently dropped by the browser, breaking sessions.
+        secure: (process.env['API_URL'] ?? '').startsWith('https'),
+      },
+    },
     getUserAttributes: (attributes) => {
       return {
         googleId: attributes.google_id,

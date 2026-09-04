@@ -81,4 +81,21 @@
 
 .submit {
   align-self: flex-start;
+  padding: var(--size-3) var(--size-6);
+  border: none;
+  border-radius: var(--radius-2);
+  background: var(--primary);
+  color: var(--white);
+  font-size: var(--font-size-3);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
