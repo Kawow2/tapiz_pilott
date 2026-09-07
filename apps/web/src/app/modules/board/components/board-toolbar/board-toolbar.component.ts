@@ -16,6 +16,7 @@ import { Subscription, zip, fromEvent } from 'rxjs';
 import 'emoji-picker-element';
 import { EmojiClickEvent } from 'emoji-picker-element/shared';
 import { CocomaterialComponent } from '../cocomaterial/cocomaterial.component';
+import { IconsComponent } from '../icons/icons.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +32,7 @@ import {
   Shape,
   Text,
   Timer,
+  Vector,
   defaultUserSettings,
 } from '@tapiz/board-commons';
 import { DrawingStore } from '../drawing/drawing.store';
@@ -70,6 +72,7 @@ export class AppModule {}
     AddImageComponent,
     LiveReactionComponent,
     CocomaterialComponent,
+    IconsComponent,
     NotesComponent,
     ToolsComponent,
     TopVotedComponent,
@@ -114,6 +117,7 @@ export class BoardToolbarComponent {
       'live-reaction',
       'top-voted',
       'image',
+      'icons',
     ];
 
     return withPopup.includes(this.popup());
@@ -129,6 +133,7 @@ export class BoardToolbarComponent {
       'live-reaction',
       'top-voted',
       'image',
+      'icons',
     ];
 
     return withPin.includes(this.popup());
@@ -615,6 +620,46 @@ export class BoardToolbarComponent {
     }
 
     this.popupOpen('token');
+  }
+
+  openIcons() {
+    if (this.popup() === 'icons') {
+      this.popupOpen('');
+      return;
+    }
+
+    this.popupOpen('icons');
+  }
+
+  iconSelected(svg: string) {
+    const size = 100;
+
+    this.toolbarSubscription = this.#zoneService
+      .select()
+      .subscribe(({ position }) => {
+        if (!this.pinned()) {
+          this.popupOpen('');
+        }
+
+        this.#store.dispatch(
+          BoardActions.batchNodeActions({
+            history: true,
+            actions: [
+              this.#nodesActions.add<Vector>('vector', {
+                url: 'data:image/svg+xml;utf8,' + encodeURIComponent(svg),
+                width: size,
+                height: size,
+                position: {
+                  x: position.x - size / 2,
+                  y: position.y - size / 2,
+                },
+                layer: this.boardMode(),
+                rotation: 0,
+              }),
+            ],
+          }),
+        );
+      });
   }
 
   ping() {

@@ -79,6 +79,7 @@
 
   <ng-container [ngTemplateOutlet]="tokenButton"></ng-container>
   <ng-container [ngTemplateOutlet]="cocomaterialButton"></ng-container>
+  <ng-container [ngTemplateOutlet]="iconsButton"></ng-container>
 
   @if (boardMode() === 0) {
     <ng-container [ngTemplateOutlet]="emojiButton"></ng-container>
@@ -149,6 +150,9 @@
           @case ('cocomaterial') {
             <tapiz-cocomaterial
               (cocomaterialSelected)="cocomaterialSelected()" />
+          }
+          @case ('icons') {
+            <tapiz-icons (iconSelected)="iconSelected($event)" />
           }
           @case ('live-reaction') {
             <tapiz-live-reaction (reactionSelected)="reactionSelected()" />
@@ -268,6 +272,16 @@
     label="Cocomaterial"
     [active]="popup() === 'cocomaterial'"
     (clicked)="togglePopup('cocomaterial')">
+  </tapiz-board-toolbar-button>
+</ng-template>
+
+<ng-template #iconsButton>
+  <tapiz-board-toolbar-button
+    icon="icons"
+    tooltip="Icons"
+    label="Icons"
+    [active]="popup() === 'icons'"
+    (clicked)="openIcons()">
   </tapiz-board-toolbar-button>
 </ng-template>
 
