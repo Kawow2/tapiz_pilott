@@ -206,6 +206,30 @@ export class BoardToolbarComponent {
         this.togglePopup('image');
       });
 
+    // Shapes: Rectangle (R), Circle (C), Line (L).
+    // Triangle has no default key because T is already bound to Text.
+    const shapeShortcuts: Record<string, Shape['shapeType']> = {
+      r: 'rectangle',
+      c: 'circle',
+      l: 'line',
+    };
+
+    fromEvent<KeyboardEvent>(document, 'keydown')
+      .pipe(
+        takeUntilDestroyed(),
+        filter(
+          (e) =>
+            e.key.toLowerCase() in shapeShortcuts &&
+            !e.ctrlKey &&
+            !e.metaKey &&
+            !e.altKey &&
+            !isInputField(),
+        ),
+      )
+      .subscribe((e) => {
+        this.shape(shapeShortcuts[e.key.toLowerCase()]);
+      });
+
     toObservable(this.popup)
       .pipe(
         takeUntilDestroyed(),

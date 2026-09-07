@@ -5,7 +5,9 @@ import {
   input,
 } from '@angular/core';
 import { Shape, TuNode } from '@tapiz/board-commons';
+import { PortalComponent } from '@tapiz/ui/portal';
 import { NodeSpaceComponent } from '../node-space';
+import { ShapeToolbarComponent } from './shape-toolbar.component';
 
 @Component({
   selector: 'tapiz-shape',
@@ -62,10 +64,16 @@ import { NodeSpaceComponent } from '../node-space';
         }
       </svg>
     </tapiz-node-space>
+
+    @if (focus()) {
+      <tapiz-portal name="node-toolbar">
+        <tapiz-shape-toolbar [node]="node()" />
+      </tapiz-portal>
+    }
   `,
   styleUrls: ['./shape.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NodeSpaceComponent],
+  imports: [NodeSpaceComponent, PortalComponent, ShapeToolbarComponent],
 })
 export class ShapeComponent {
   node = input.required<TuNode<Shape>>();
