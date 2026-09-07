@@ -1,0 +1,12 @@
+:host {
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.shape {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}

@@ -44,4 +44,20 @@ export class ToolsComponent {
   selectedArrow() {
     this.selectedTool.emit('selectedArrow');
   }
+
+  selectedRectangle() {
+    this.selectedTool.emit('selectedRectangle');
+  }
+
+  selectedCircle() {
+    this.selectedTool.emit('selectedCircle');
+  }
+
+  selectedTriangle() {
+    this.selectedTool.emit('selectedTriangle');
+  }
+
+  selectedLine() {
+    this.selectedTool.emit('selectedLine');
+  }
 }

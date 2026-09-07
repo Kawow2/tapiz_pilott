@@ -28,6 +28,7 @@ import {
   NodeAdd,
   Panel,
   PollBoard,
+  Shape,
   Text,
   Timer,
   defaultUserSettings,
@@ -297,7 +298,62 @@ export class BoardToolbarComponent {
         this.#store.dispatch(BoardPageActions.setFocusId({ focusId: '' }));
         this.popupOpen('arrow');
         break;
+      case 'selectedRectangle':
+        this.shape('rectangle');
+        break;
+      case 'selectedCircle':
+        this.shape('circle');
+        break;
+      case 'selectedTriangle':
+        this.shape('triangle');
+        break;
+      case 'selectedLine':
+        this.shape('line');
+        break;
     }
+  }
+
+  shape(shapeType: Shape['shapeType']) {
+    this.popupOpen('shape');
+
+    this.toolbarSubscription = this.#zoneService
+      .selectArea('panel')
+      .subscribe((zone) => {
+        this.popupOpen('');
+
+        if (!zone) {
+          return;
+        }
+
+        let { width, height } = zone.size;
+
+        if (width < 2) {
+          width = 200;
+        }
+
+        if (height < 2) {
+          height = shapeType === 'line' ? 40 : 200;
+        }
+
+        const shape: Shape = {
+          shapeType,
+          position: zone.position,
+          width: Math.round(width),
+          height: Math.round(height),
+          layer: zone.layer,
+          rotation: 0,
+          backgroundColor: shapeType === 'line' ? null : '#ffffff',
+          borderColor: '#1e254b',
+          borderWidth: shapeType === 'line' ? 4 : 2,
+        };
+
+        this.#store.dispatch(
+          BoardActions.batchNodeActions({
+            history: true,
+            actions: [this.#nodesActions.add('shape', shape)],
+          }),
+        );
+      });
   }
 
   note() {

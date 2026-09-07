@@ -2,6 +2,7 @@ export * from './models/board.model.js';
 export * from './models/note.model.js';
 export * from './models/group.model.js';
 export * from './models/panel.model.js';
+export * from './models/shape.model.js';
 export * from './models/image.model.js';
 export * from './models/point.model.js';
 export * from './models/vote.model.js';

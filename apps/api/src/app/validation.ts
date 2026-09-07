@@ -16,6 +16,7 @@ const validations = {
   },
   new: {
     panel: Validators.newPanel,
+    shape: Validators.newShape,
     group: Validators.newGroup,
     image: Validators.newImage,
     vector: Validators.newVector,
@@ -24,6 +25,7 @@ const validations = {
   },
   patch: {
     panel: Validators.patchPanel,
+    shape: Validators.patchShape,
     group: Validators.patchGroup,
     image: Validators.patchImage,
     vector: Validators.patchVector,
