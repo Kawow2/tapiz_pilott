@@ -4,7 +4,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -17,7 +16,7 @@ import { AuthService } from '../../../../services/auth.service';
   styleUrls: ['./login.component.scss'],
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, NgOptimizedImage],
+  imports: [NgOptimizedImage],
 })
 export class LoginComponent {
   #userApiService = inject(UserApiService);
@@ -25,23 +24,18 @@ export class LoginComponent {
   #store = inject(Store);
   #router = inject(Router);
 
-  name = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.maxLength(50)],
-  });
   loading = signal(false);
 
-  login() {
-    const name = this.name.value.trim();
+  login(name: string) {
+    const trimmed = name.trim();
 
-    if (!name || this.loading()) {
-      this.name.markAsTouched();
+    if (!trimmed || this.loading()) {
       return;
     }
 
     this.loading.set(true);
 
-    this.#userApiService.login(name).subscribe({
+    this.#userApiService.login(trimmed).subscribe({
       next: (user) => {
         this.#store.dispatch(AppActions.setUser({ user }));
         this.#authService.setLocalStoreUser(user);

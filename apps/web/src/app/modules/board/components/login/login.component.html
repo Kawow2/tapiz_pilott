@@ -21,20 +21,20 @@
 
   <form
     class="login-form"
-    (ngSubmit)="login()">
+    (submit)="$event.preventDefault(); login(pseudo.value)">
     <label
       class="field-label"
       for="pseudo"
       >Choose a nickname to get started</label
     >
     <input
+      #pseudo
       id="pseudo"
       class="pseudo-input"
       type="text"
       autocomplete="off"
       maxlength="50"
-      placeholder="Your nickname"
-      [formControl]="name" />
+      placeholder="Your nickname" />
 
     <button
       class="submit"
