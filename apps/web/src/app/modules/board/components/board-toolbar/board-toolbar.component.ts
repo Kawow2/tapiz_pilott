@@ -206,12 +206,13 @@ export class BoardToolbarComponent {
         this.togglePopup('image');
       });
 
-    // Shapes: Rectangle (R), Circle (C), Line (L).
-    // Triangle has no default key because T is already bound to Text.
+    // Shapes drawn by first letter: R rectangle, C circle, L line.
+    // Triangle uses Y because T is already bound to Text.
     const shapeShortcuts: Record<string, Shape['shapeType']> = {
       r: 'rectangle',
       c: 'circle',
       l: 'line',
+      y: 'triangle',
     };
 
     fromEvent<KeyboardEvent>(document, 'keydown')
