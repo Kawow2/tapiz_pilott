@@ -18,8 +18,10 @@ services:
       dockerfile: ./apps/api/Dockerfile.api
     depends_on:
       - db
-    ports:
-      - '${API_PORT:-8000}:${API_PORT:-8000}'
+    # The API is not published on the host: the browser reaches it through the
+    # web container's nginx (same-origin on FRONTEND_PORT), which proxies /api
+    # and /socket.io to api:8000 over the internal Docker network. This avoids
+    # host port conflicts and keeps the API unexposed.
     environment:
       - NODE_ENV=production
       - API_HOST=${API_HOST:-0.0.0.0}
