@@ -38,5 +38,8 @@
 
   > tapiz-editor-view {
     inline-size: 100%;
+    // Match the displayed default so alignment is consistent; an explicit
+    // left/right alignment on a paragraph still overrides it.
+    text-align: center;
   }
 }

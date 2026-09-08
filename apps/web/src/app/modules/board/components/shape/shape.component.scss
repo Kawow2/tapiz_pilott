@@ -28,10 +28,13 @@
 .rich-text {
   inline-size: 100%;
   block-size: 100%;
+  // Column flex centres the text vertically while leaving each paragraph full
+  // width, so the per-paragraph left/centre/right alignment is preserved.
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   overflow: hidden;
+  // Default alignment; an explicit align (left/right) on a paragraph overrides.
   text-align: center;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
