@@ -9,6 +9,8 @@ const vector = z.object({
   ...SizeValidator,
   url: z.string().max(20000),
   rotation: z.number(),
+  icon: z.boolean().optional(),
+  color: z.string().max(50).optional(),
 });
 
 export const patchVector = vector.partial();

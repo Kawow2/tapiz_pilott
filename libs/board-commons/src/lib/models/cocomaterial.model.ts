@@ -36,6 +36,10 @@ export interface Vector {
   position: Point;
   layer: number;
   rotation: number;
+  // Recolorable single-stroke icons (from the icon picker) set this flag so
+  // the board offers a colour control; `color` overrides the SVG stroke.
+  icon?: boolean;
+  color?: string;
 }
 
 export function isVector(node: TuNode): node is TuNode<Vector> {

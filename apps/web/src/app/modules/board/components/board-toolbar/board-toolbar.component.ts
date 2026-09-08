@@ -647,6 +647,7 @@ export class BoardToolbarComponent {
             actions: [
               this.#nodesActions.add<Vector>('vector', {
                 url: 'data:image/svg+xml;utf8,' + encodeURIComponent(svg),
+                icon: true,
                 width: size,
                 height: size,
                 position: {
