@@ -44,6 +44,25 @@ export async function getUserByEmail(email: string) {
   return users.at(0);
 }
 
+export async function getUserByUsername(username: string) {
+  const users = await db
+    .select()
+    .from(schema.accounts)
+    .where(eq(schema.accounts.username, username));
+
+  return users.at(0);
+}
+
+export async function createUserWithPassword(user: {
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+}) {
+  return db.insert(schema.accounts).values(user);
+}
+
 export async function getUserByApiTokenHash(apiTokenHash: string) {
   const users = await db
     .select()

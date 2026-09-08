@@ -19,6 +19,10 @@ export const accounts = pgTable('accounts', {
   id: varchar('id', { length: 256 }).primaryKey(),
   name: varchar('name', { length: 256 }).notNull(),
   email: varchar('email', { length: 320 }).notNull().unique(),
+  // Username + password login (persistent accounts). Nullable so pre-existing
+  // rows (e.g. Google or legacy anonymous accounts) stay valid.
+  username: varchar('username', { length: 256 }).unique(),
+  passwordHash: varchar('password_hash'),
   picture: varchar('picture'),
   googleId: varchar('google_id').unique(),
   apiTokenHash: varchar('api_token_hash', { length: 64 }).unique(),

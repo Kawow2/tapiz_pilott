@@ -19,28 +19,106 @@
     productive meetings, retrospectives, and brainstorming.
   </p>
 
-  <form
-    class="login-form"
-    (submit)="$event.preventDefault(); login(pseudo.value)">
-    <label
-      class="field-label"
-      for="pseudo"
-      >Choose a nickname to get started</label
-    >
-    <input
-      #pseudo
-      id="pseudo"
-      class="pseudo-input"
-      type="text"
-      autocomplete="off"
-      maxlength="50"
-      placeholder="Your nickname" />
+  @if (info()) {
+    <p class="info">{{ info() }}</p>
+  }
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
 
-    <button
-      class="submit"
-      type="submit"
-      [disabled]="loading()">
-      Continue
-    </button>
-  </form>
+  @if (mode() === 'login') {
+    <form
+      class="login-form"
+      (submit)="$event.preventDefault(); login(username.value, password.value)">
+      <label
+        class="field-label"
+        for="username"
+        >Nom d'utilisateur</label
+      >
+      <input
+        #username
+        id="username"
+        class="pseudo-input"
+        type="text"
+        autocomplete="username"
+        maxlength="50"
+        placeholder="Nom d'utilisateur" />
+
+      <label
+        class="field-label"
+        for="password"
+        >Mot de passe</label
+      >
+      <input
+        #password
+        id="password"
+        class="pseudo-input"
+        type="password"
+        autocomplete="current-password"
+        maxlength="100"
+        placeholder="Mot de passe" />
+
+      <div class="form-actions">
+        <button
+          class="submit"
+          type="submit"
+          [disabled]="loading()">
+          Se connecter
+        </button>
+        <button
+          class="link-button"
+          type="button"
+          (click)="setMode('register')">
+          Créer un compte
+        </button>
+      </div>
+    </form>
+  } @else {
+    <form
+      class="login-form"
+      (submit)="$event.preventDefault(); register(username.value, password.value)">
+      <label
+        class="field-label"
+        for="new-username"
+        >Nom d'utilisateur</label
+      >
+      <input
+        #username
+        id="new-username"
+        class="pseudo-input"
+        type="text"
+        autocomplete="username"
+        maxlength="50"
+        placeholder="Choisissez un nom d'utilisateur" />
+
+      <label
+        class="field-label"
+        for="new-password"
+        >Mot de passe</label
+      >
+      <input
+        #password
+        id="new-password"
+        class="pseudo-input"
+        type="password"
+        autocomplete="new-password"
+        maxlength="100"
+        placeholder="Au moins 6 caractères" />
+
+      <div class="form-actions">
+        <button
+          class="submit"
+          type="submit"
+          [disabled]="loading()">
+          Créer le compte
+        </button>
+        <button
+          class="link-button"
+          type="button"
+          (click)="setMode('login')">
+          J'ai déjà un compte
+        </button>
+      </div>
+    </form>
+  }
 </div>

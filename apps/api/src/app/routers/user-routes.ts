@@ -13,31 +13,78 @@ import { createUserSessionCookie, lucia } from '../auth.js';
 import { userSettingsValidator } from '@tapiz/board-commons/validators/user-settings.validator.js';
 import { withDefaultUserSettings } from '@tapiz/board-commons';
 import { generateApiToken, hashApiToken } from '../api-token.js';
+import { hashPassword, verifyPassword } from '../password.js';
 
 export const userRouter = router({
-  login: publicAuthProcedure
-    .input(z.object({ name: z.string().trim().min(1).max(50) }))
+  register: publicAuthProcedure
+    .input(
+      z.object({
+        username: z.string().trim().min(3).max(50),
+        password: z.string().min(6).max(100),
+      }),
+    )
     .mutation(async (req) => {
+      const username = req.input.username;
+
+      const existing = await db.user.getUserByUsername(username);
+
+      if (existing) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Username already taken',
+        });
+      }
+
       const userId = generateId(15);
-      // Anonymous accounts have no real email; synthesize a unique placeholder
-      // so the (NOT NULL, unique) email column keeps working without a migration.
-      const email = `${userId}@anonymous.tapiz`;
+      // The email column is NOT NULL + unique but unused for password accounts;
+      // synthesize a unique placeholder from the generated id.
+      const email = `${userId}@tapiz.local`;
+      const passwordHash = await hashPassword(req.input.password);
 
-      await db.user.createUser(userId, req.input.name, email);
+      await db.user.createUserWithPassword({
+        id: userId,
+        username,
+        name: username,
+        email,
+        passwordHash,
+      });
 
-      const sessionCookie = await createUserSessionCookie(userId);
+      return { success: true };
+    }),
+
+  login: publicAuthProcedure
+    .input(
+      z.object({
+        username: z.string().trim().min(1).max(50),
+        password: z.string().min(1).max(100),
+      }),
+    )
+    .mutation(async (req) => {
+      const user = await db.user.getUserByUsername(req.input.username);
+
+      const valid = user
+        ? await verifyPassword(req.input.password, user.passwordHash)
+        : false;
+
+      if (!user || !valid) {
+        // Same error whether the user is missing or the password is wrong.
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Invalid username or password',
+        });
+      }
+
+      const sessionCookie = await createUserSessionCookie(user.id);
 
       req.ctx.res.setCookie(sessionCookie.name, sessionCookie.value, {
         ...sessionCookie.attributes,
       });
 
-      const user = await db.user.getUser(userId);
-
       return {
-        id: userId,
-        name: req.input.name,
-        picture: '',
-        settings: withDefaultUserSettings(user?.settings),
+        id: user.id,
+        name: user.name,
+        picture: user.picture ?? '',
+        settings: withDefaultUserSettings(user.settings),
       };
     }),
   removeAccount: protectedProcedure.mutation(async (req) => {
