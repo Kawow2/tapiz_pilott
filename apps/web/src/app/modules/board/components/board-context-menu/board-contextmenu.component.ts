@@ -86,7 +86,7 @@ export class BoardContextMenuComponent implements OnInit {
               icon: 'content_copy',
               help: 'Ctrl + C',
               action: () => {
-                this.nodesStore.copyNodes(currentNodes);
+                this.copyPasteService.copyNodes(currentNodes);
               },
             },
             {
@@ -354,7 +354,7 @@ export class BoardContextMenuComponent implements OnInit {
               ])
                 .pipe(take(1))
                 .subscribe(([position, zoom]) => {
-                  this.copyPasteService.pasteCurrentClipboard({
+                  this.copyPasteService.paste({
                     x: (-position.x + event.x) / zoom,
                     y: (-position.y + event.y) / zoom,
                   });

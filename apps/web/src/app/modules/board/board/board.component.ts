@@ -73,6 +73,7 @@ import { DemoIntroComponent } from '../components/demo-intro/demo-intro.componen
 import { filterNil } from 'ngxtension/filter-nil';
 import { ZoomControlComponent } from '../components/zoom-control/zoom-control.component';
 import { BoardNodesAlignComponent } from '../components/board-nodes-align/board-nodes-align.component';
+import { BoardNodesStyleComponent } from '../components/board-nodes-style/board-nodes-style.component';
 import { LiveReactionWallComponent } from '../components/live-reaction/live-reaction-wall.component';
 import { BoardShourtcutsDirective } from '../directives/board-shortcuts.directive';
 import { PopupPortalComponent } from '@tapiz/ui/popup/popup-portal.component';
@@ -120,6 +121,7 @@ import { PingWallComponent } from '../components/ping/ping-wall.component';
     DemoIntroComponent,
     ZoomControlComponent,
     BoardNodesAlignComponent,
+    BoardNodesStyleComponent,
     LiveReactionWallComponent,
     PopupPortalComponent,
     NotesVisibilityComponent,

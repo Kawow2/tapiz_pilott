@@ -10,6 +10,11 @@ import { boardPageFeature } from '../modules/board/reducers/boardPage.reducer';
 export class CopyPasteService {
   private store = inject(Store);
 
+  // In-memory clipboard: the source of truth so copy/paste works even where the
+  // system clipboard is unavailable (http, restricted contexts). The system
+  // clipboard is written best-effort on top so copying works across boards/tabs.
+  #clipboard: TuNode[] = [];
+
   public readonly layer = this.store.selectSignal(
     boardPageFeature.selectBoardMode,
   );
@@ -20,6 +25,35 @@ export class CopyPasteService {
     } catch (_) {
       return [];
     }
+  }
+
+  public copyNodes(nodes: TuNode[]) {
+    this.#clipboard = nodes.length ? JSON.parse(JSON.stringify(nodes)) : [];
+
+    try {
+      const write = navigator.clipboard?.writeText?.(JSON.stringify(nodes));
+      write?.catch(() => {
+        // ignore: the in-memory clipboard is the source of truth
+      });
+    } catch {
+      // ignore: the in-memory clipboard is the source of truth
+    }
+  }
+
+  public async paste(options?: {
+    history?: boolean;
+    x?: number;
+    y?: number;
+    incX?: number;
+    incY?: number;
+  }) {
+    if (this.#clipboard.length) {
+      this.pasteNodes(this.#clipboard, options);
+      return;
+    }
+
+    // Nothing copied in this session: try content copied elsewhere.
+    await this.pasteCurrentClipboard(options);
   }
 
   public async pasteCurrentClipboard(options?: {
@@ -36,11 +70,27 @@ export class CopyPasteService {
     }
 
     const text = await navigator.clipboard.readText();
-    const copyNode = this.getNodes(text);
 
-    if (!copyNode.length) {
+    this.pasteNodes(this.getNodes(text), options);
+  }
+
+  public pasteNodes(
+    sourceNodes: TuNode[],
+    options?: {
+      history?: boolean;
+      x?: number;
+      y?: number;
+      incX?: number;
+      incY?: number;
+    },
+  ) {
+    if (!sourceNodes.length) {
       return;
     }
+
+    // Clone so callers passing live board nodes (e.g. duplicate) are not
+    // mutated by the position/children rewrites below.
+    const copyNode: TuNode[] = JSON.parse(JSON.stringify(sourceNodes));
 
     const nodes: NodeAdd['data'][] = copyNode.map((it, index): TuNode => {
       if (isBoardTuNode(it)) {
