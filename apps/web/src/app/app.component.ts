@@ -45,6 +45,7 @@ export class AppComponent {
     'top-voted',
     'voting',
     'user',
+    'icons',
     'templates',
     'download',
     'settings',

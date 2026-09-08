@@ -7,7 +7,7 @@ import {
 const vector = z.object({
   ...CommonBoardValidation,
   ...SizeValidator,
-  url: z.string().max(1000),
+  url: z.string().max(20000),
   rotation: z.number(),
 });
 
