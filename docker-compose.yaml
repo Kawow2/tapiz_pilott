@@ -62,9 +62,10 @@ volumes:
 networks:
   # Cap the Docker network MTU so containers send packets that fit reduced-MTU
   # paths (VPN/WiFi). Without this, large WebSocket frames (board state) can be
-  # silently dropped on such paths while small requests still work. 1400 is a
-  # safe default; lower it (e.g. 1350) via DOCKER_MTU if a VPN is more constrained.
+  # silently dropped on such paths while small requests still work. 900 covers
+  # heavily constrained VPNs seen in practice; tune it via DOCKER_MTU (a higher
+  # value like 1400 is slightly more efficient if your clients allow it).
   default:
     driver: bridge
     driver_opts:
-      com.docker.network.driver.mtu: '${DOCKER_MTU:-1400}'
+      com.docker.network.driver.mtu: '${DOCKER_MTU:-900}'
