@@ -24,7 +24,11 @@ export class WsService {
   #socket = io(this.#configService.config.WS_URL, {
     autoConnect: false,
     withCredentials: true,
-    transports: ['websocket', 'webtransport'],
+    // Start with HTTP long-polling (plain HTTP, always allowed) and upgrade to
+    // WebSocket when the network permits. Without the polling fallback, users
+    // behind a proxy/EDR/firewall that resets WebSocket upgrades (common on
+    // corporate VPNs) can't open any board.
+    transports: ['polling', 'websocket'],
     parser: customParser,
   });
   correlationId = v4();
