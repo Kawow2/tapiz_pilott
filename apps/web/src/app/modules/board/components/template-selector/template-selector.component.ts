@@ -4,7 +4,6 @@ import {
   inject,
   output,
 } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { BoardActions } from '../../actions/board.actions';
 import { NodeAdd, TuNode } from '@tapiz/board-commons';
@@ -22,7 +21,7 @@ interface Template {
 
 @Component({
   selector: 'tapiz-template-selector',
-  imports: [NgOptimizedImage],
+  imports: [],
   template: `<div class="templates">
     @for (template of elements; track template.title) {
       <button
@@ -30,9 +29,10 @@ interface Template {
         type="text"
         (click)="create(template)">
         <img
-          [ngSrc]="template.image"
+          [src]="template.image"
           [width]="template.width"
-          [height]="template.height" />
+          [height]="template.height"
+          [alt]="template.title" />
         <p>{{ template.title }}</p>
       </button>
     }
@@ -85,6 +85,42 @@ export class TemplateSelectorComponent {
       height: 244,
       load: () => {
         return import('./templates/starfish');
+      },
+    },
+    {
+      title: '4 Ls',
+      image: 'assets/templates/4ls.svg',
+      width: 300,
+      height: 150,
+      load: () => {
+        return import('./templates/4ls');
+      },
+    },
+    {
+      title: 'DAKI',
+      image: 'assets/templates/daki.svg',
+      width: 300,
+      height: 150,
+      load: () => {
+        return import('./templates/daki');
+      },
+    },
+    {
+      title: 'KALM',
+      image: 'assets/templates/kalm.svg',
+      width: 300,
+      height: 150,
+      load: () => {
+        return import('./templates/kalm');
+      },
+    },
+    {
+      title: 'Lean Coffee',
+      image: 'assets/templates/lean-coffee.svg',
+      width: 300,
+      height: 150,
+      load: () => {
+        return import('./templates/lean-coffee');
       },
     },
   ];
