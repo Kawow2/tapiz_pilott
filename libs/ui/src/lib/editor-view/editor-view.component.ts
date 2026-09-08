@@ -25,6 +25,7 @@ import { Bold } from '@tiptap/extension-bold';
 import { Document } from '@tiptap/extension-document';
 import { Text } from '@tiptap/extension-text';
 import { Mention, MentionNodeAttrs } from '@tiptap/extension-mention';
+import { KeepFormattingOnClear } from './keep-formatting-on-clear';
 import { output } from '@angular/core';
 import { input } from '@angular/core';
 import { PopupComponent } from '../popup/popup.component';
@@ -85,6 +86,7 @@ export class EditorViewComponent implements OnDestroy, AfterViewInit {
   defaultFontFamily = input<string | null>(null);
   defaultBold = input(false);
   defaultItalic = input(false);
+  keepFormattingOnClear = input(false);
   popupComponent = viewChild(PopupComponent);
   mentions = input<{ id: string; name: string }[]>([]);
   suggestedMentions = signal<{ id: string; name: string }[]>([]);
@@ -156,6 +158,7 @@ export class EditorViewComponent implements OnDestroy, AfterViewInit {
         },
       },
       extensions: [
+        ...(this.keepFormattingOnClear() ? [KeepFormattingOnClear] : []),
         ListItem,
         Text,
         Document,

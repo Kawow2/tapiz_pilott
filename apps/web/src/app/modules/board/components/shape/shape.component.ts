@@ -83,9 +83,10 @@ import { HistoryService } from '../../services/history.service';
             <tapiz-editor-portal [node]="node()">
               <tapiz-editor-view
                 #editorView="editorView"
-                customClass="tapiz-shape-editor"
+                [customClass]="editorClass()"
                 [content]="initialText()"
                 [focus]="edit()"
+                [keepFormattingOnClear]="true"
                 (contentChange)="setText($event)" />
             </tapiz-editor-portal>
 
@@ -100,6 +101,7 @@ import { HistoryService } from '../../services/history.service';
           } @else if (text()) {
             <div
               class="rich-text"
+              [style.justify-content]="verticalJustify()"
               [innerHTML]="text() | safeHtml"></div>
           }
         </div>
@@ -135,6 +137,19 @@ export class ShapeComponent {
   edit = signal(false);
   initialText = signal('');
   text = computed(() => this.node().content.text ?? '');
+
+  verticalAlign = computed(() => this.node().content.verticalAlign ?? 'middle');
+  // Column-flex main axis (display): where the text block sits vertically.
+  verticalJustify = computed(
+    () =>
+      ({ top: 'flex-start', middle: 'center', bottom: 'flex-end' })[
+        this.verticalAlign()
+      ],
+  );
+  // Modifier class the global stylesheet keys on to align the teleported editor.
+  editorClass = computed(
+    () => `tapiz-shape-editor tapiz-shape-editor--${this.verticalAlign()}`,
+  );
 
   width = computed(() => this.node().content.width);
   height = computed(() => this.node().content.height);

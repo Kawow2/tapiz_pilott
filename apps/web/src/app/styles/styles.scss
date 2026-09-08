@@ -43,3 +43,17 @@
     text-align: center;
   }
 }
+
+// Vertical alignment of the label inside the shape (top / middle / bottom),
+// keyed on the modifier class the shape adds to the editor.
+.portal:has(.tapiz-shape-editor--top) {
+  align-items: flex-start;
+}
+
+.portal:has(.tapiz-shape-editor--middle) {
+  align-items: center;
+}
+
+.portal:has(.tapiz-shape-editor--bottom) {
+  align-items: flex-end;
+}

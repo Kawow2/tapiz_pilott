@@ -4,7 +4,7 @@ import {
   SizeValidator,
 } from './common-board-validation.js';
 import { nullableColorSchema } from './color.validator.js';
-import { shapeTypes } from '../models/shape.model.js';
+import { shapeTypes, shapeVerticalAligns } from '../models/shape.model.js';
 
 const shape = z.object({
   ...CommonBoardValidation,
@@ -12,6 +12,7 @@ const shape = z.object({
   shapeType: z.enum(shapeTypes),
   rotation: z.number(),
   text: z.string().optional(),
+  verticalAlign: z.enum(shapeVerticalAligns).optional(),
   backgroundColor: nullableColorSchema.optional(),
   borderColor: nullableColorSchema.optional(),
   borderWidth: z.number().nonnegative().int().nullable().optional(),

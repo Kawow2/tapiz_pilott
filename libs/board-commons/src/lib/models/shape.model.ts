@@ -5,6 +5,10 @@ export const shapeTypes = ['rectangle', 'circle', 'triangle', 'line'] as const;
 
 export type ShapeType = (typeof shapeTypes)[number];
 
+export const shapeVerticalAligns = ['top', 'middle', 'bottom'] as const;
+
+export type ShapeVerticalAlign = (typeof shapeVerticalAligns)[number];
+
 export interface Shape {
   shapeType: ShapeType;
   position: Point;
@@ -13,6 +17,7 @@ export interface Shape {
   height: number;
   rotation: number;
   text?: string;
+  verticalAlign?: ShapeVerticalAlign;
   backgroundColor?: string | null;
   borderColor?: string | null;
   borderWidth?: number | null;
