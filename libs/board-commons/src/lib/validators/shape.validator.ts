@@ -11,7 +11,7 @@ const shape = z.object({
   ...SizeValidator,
   shapeType: z.enum(shapeTypes),
   rotation: z.number(),
-  text: z.string().max(2000).optional(),
+  text: z.string().optional(),
   backgroundColor: nullableColorSchema.optional(),
   borderColor: nullableColorSchema.optional(),
   borderWidth: z.number().nonnegative().int().nullable().optional(),

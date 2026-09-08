@@ -1,21 +1,23 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  ElementRef,
   computed,
-  effect,
   inject,
   input,
   signal,
-  viewChild,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Shape, TuNode } from '@tapiz/board-commons';
 import { BoardActions } from '@tapiz/board-commons/actions/board.actions';
 import { explicitEffect } from 'ngxtension/explicit-effect';
 import { PortalComponent } from '@tapiz/ui/portal';
+import { SafeHtmlPipe } from '@tapiz/cdk/pipes/safe-html';
+import { EditorViewComponent } from '@tapiz/ui/editor-view';
 import { NodeSpaceComponent } from '../node-space';
 import { ShapeToolbarComponent } from './shape-toolbar.component';
+import { EditorPortalComponent } from '../editor-portal/editor-portal.component';
+import { NodeToolbarComponent } from '../node-toolbar/node-toolbar.component';
+import { HistoryService } from '../../services/history.service';
 
 @Component({
   selector: 'tapiz-shape',
@@ -74,26 +76,38 @@ import { ShapeToolbarComponent } from './shape-toolbar.component';
       </svg>
 
       @if (node().content.shapeType !== 'line') {
-        <div
-          class="text-layer"
-          (dblclick)="startEdit($event)">
-          @if (edit()) {
-            <textarea
-              #textarea
-              class="editor"
-              [value]="editText()"
-              (input)="editText.set(textarea.value)"
-              (pointerdown)="$event.stopPropagation()"
-              (blur)="save()"
-              (keydown.escape)="save()"></textarea>
-          } @else if (node().content.text) {
-            <div class="text">{{ node().content.text }}</div>
+        @if (edit()) {
+          <tapiz-editor-portal [node]="node()">
+            <tapiz-editor-view
+              #editorView="editorView"
+              [content]="initialText()"
+              [focus]="edit()"
+              (contentChange)="setText($event)" />
+          </tapiz-editor-portal>
+
+          @if (editorView.editor(); as editor) {
+            <tapiz-portal name="node-toolbar">
+              <tapiz-node-toolbar
+                [node]="node()"
+                [fontSize]="true"
+                [editor]="editor" />
+            </tapiz-portal>
           }
-        </div>
+        } @else {
+          <div
+            class="text-layer"
+            (dblclick)="startEdit($event)">
+            @if (text()) {
+              <div
+                class="rich-text"
+                [innerHTML]="text() | safeHtml"></div>
+            }
+          </div>
+        }
       }
     </tapiz-node-space>
 
-    @if (focus()) {
+    @if (focus() && !edit()) {
       <tapiz-portal name="node-toolbar">
         <tapiz-shape-toolbar [node]="node()" />
       </tapiz-portal>
@@ -101,18 +115,27 @@ import { ShapeToolbarComponent } from './shape-toolbar.component';
   `,
   styleUrls: ['./shape.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NodeSpaceComponent, PortalComponent, ShapeToolbarComponent],
+  imports: [
+    NodeSpaceComponent,
+    PortalComponent,
+    SafeHtmlPipe,
+    EditorViewComponent,
+    EditorPortalComponent,
+    NodeToolbarComponent,
+    ShapeToolbarComponent,
+  ],
 })
 export class ShapeComponent {
   #store = inject(Store);
+  #historyService = inject(HistoryService);
 
   node = input.required<TuNode<Shape>>();
   pasted = input.required<boolean>();
   focus = input.required<boolean>();
 
   edit = signal(false);
-  editText = signal('');
-  textarea = viewChild<ElementRef<HTMLTextAreaElement>>('textarea');
+  initialText = signal('');
+  text = computed(() => this.node().content.text ?? '');
 
   width = computed(() => this.node().content.width);
   height = computed(() => this.node().content.height);
@@ -146,19 +169,19 @@ export class ShapeComponent {
   });
 
   constructor() {
-    // Focus the textarea once it is rendered.
-    effect(() => {
-      const textarea = this.textarea();
-
-      if (this.edit() && textarea) {
-        textarea.nativeElement.focus();
+    // Bracket the edit for a single, clean undo entry.
+    explicitEffect([this.edit], ([edit]) => {
+      if (edit) {
+        this.#historyService.initEdit(this.node());
+      } else {
+        this.#historyService.finishEdit(this.node());
       }
     });
 
     // Losing focus (clicking away) commits and closes the editor.
     explicitEffect([this.focus], ([focus]) => {
-      if (!focus && this.edit()) {
-        this.save();
+      if (!focus) {
+        this.edit.set(false);
       }
     });
   }
@@ -171,33 +194,21 @@ export class ShapeComponent {
     event.preventDefault();
     event.stopPropagation();
 
-    this.editText.set(this.node().content.text ?? '');
+    this.initialText.set(this.node().content.text ?? '');
     this.edit.set(true);
   }
 
-  save() {
-    if (!this.edit()) {
-      return;
-    }
-
-    this.edit.set(false);
-
-    const text = this.editText();
-
-    if (text === (this.node().content.text ?? '')) {
-      return;
-    }
-
+  setText(value: string) {
     this.#store.dispatch(
       BoardActions.batchNodeActions({
-        history: true,
+        history: false,
         actions: [
           {
             op: 'patch',
             data: {
               id: this.node().id,
               type: this.node().type,
-              content: { text },
+              content: { text: value },
             },
           },
         ],
