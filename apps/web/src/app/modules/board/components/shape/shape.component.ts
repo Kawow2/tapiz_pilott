@@ -76,34 +76,33 @@ import { HistoryService } from '../../services/history.service';
       </svg>
 
       @if (node().content.shapeType !== 'line') {
-        @if (edit()) {
-          <tapiz-editor-portal [node]="node()">
-            <tapiz-editor-view
-              #editorView="editorView"
-              [content]="initialText()"
-              [focus]="edit()"
-              (contentChange)="setText($event)" />
-          </tapiz-editor-portal>
+        <div
+          class="text-layer"
+          (dblclick)="startEdit($event)">
+          @if (edit()) {
+            <tapiz-editor-portal [node]="node()">
+              <tapiz-editor-view
+                #editorView="editorView"
+                customClass="tapiz-shape-editor"
+                [content]="initialText()"
+                [focus]="edit()"
+                (contentChange)="setText($event)" />
+            </tapiz-editor-portal>
 
-          @if (editorView.editor(); as editor) {
-            <tapiz-portal name="node-toolbar">
-              <tapiz-node-toolbar
-                [node]="node()"
-                [fontSize]="true"
-                [editor]="editor" />
-            </tapiz-portal>
-          }
-        } @else {
-          <div
-            class="text-layer"
-            (dblclick)="startEdit($event)">
-            @if (text()) {
-              <div
-                class="rich-text"
-                [innerHTML]="text() | safeHtml"></div>
+            @if (editorView.editor(); as editor) {
+              <tapiz-portal name="node-toolbar">
+                <tapiz-node-toolbar
+                  [node]="node()"
+                  [fontSize]="true"
+                  [editor]="editor" />
+              </tapiz-portal>
             }
-          </div>
-        }
+          } @else if (text()) {
+            <div
+              class="rich-text"
+              [innerHTML]="text() | safeHtml"></div>
+          }
+        </div>
       }
     </tapiz-node-space>
 
@@ -187,7 +186,7 @@ export class ShapeComponent {
   }
 
   startEdit(event: MouseEvent) {
-    if (this.node().content.shapeType === 'line') {
+    if (this.edit() || this.node().content.shapeType === 'line') {
       return;
     }
 

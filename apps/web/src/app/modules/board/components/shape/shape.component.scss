@@ -5,25 +5,32 @@
 }
 
 .shape {
+  // Out of flow so it never pushes the text/editor below the shape; it is the
+  // backdrop the text layer sits on top of.
+  position: absolute;
+  inset: 0;
   display: block;
   inline-size: 100%;
   block-size: 100%;
   overflow: visible;
 }
 
+// Both the displayed text and the (teleported) editor anchor here, so editing
+// keeps the label exactly where it is shown. Not a flex container: the editor
+// portal measures its own top-left offset from here to place the editor.
 .text-layer {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 12px;
   box-sizing: border-box;
 }
 
 .rich-text {
   inline-size: 100%;
-  max-block-size: 100%;
+  block-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   text-align: center;
   white-space: pre-wrap;

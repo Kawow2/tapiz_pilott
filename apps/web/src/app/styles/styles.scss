@@ -27,3 +27,16 @@
   --primary-color-background: var(--grey-20);
   --primary-color-button-bg: var(--grey-90);
 }
+
+// Shape labels: the rich-text editor is teleported into the board's
+// editor-portal outlet and fills the shape's box. Centre its content
+// vertically (scoped via the shape editor's customClass) so editing keeps the
+// text where the label is shown instead of anchoring it to the top.
+.portal:has(.tapiz-shape-editor) {
+  display: flex;
+  align-items: center;
+
+  > tapiz-editor-view {
+    inline-size: 100%;
+  }
+}
