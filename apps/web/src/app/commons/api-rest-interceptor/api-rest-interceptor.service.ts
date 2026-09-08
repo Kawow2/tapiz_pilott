@@ -13,10 +13,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const wsService = inject(WsService);
 
   // update api-config.service.ts
+  const { API_URL, WS_URL } = configService.config ?? {};
+
+  // Guard against empty bases: with same-origin (relative) config WS_URL is ''
+  // and `''.includes` would match every request, tagging assets as API calls.
   if (
     configService.config &&
-    (req.url.includes(configService.config.API_URL) ||
-      req.url.includes(configService.config.WS_URL))
+    ((API_URL && req.url.includes(API_URL)) ||
+      (WS_URL && req.url.includes(WS_URL)))
   ) {
     let request = req.clone({
       headers: new HttpHeaders({

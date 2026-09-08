@@ -21,7 +21,9 @@ export class WsService {
   #pool: unknown[] = [];
   #notificationService = inject(NotificationService);
   #router = inject(Router);
-  #socket = io(this.#configService.config.WS_URL, {
+  // An empty WS_URL means "same origin": connect back to whatever host serves
+  // the app (localhost locally, the LAN IP in prod) through the nginx proxy.
+  #socket = io(this.#configService.config.WS_URL || location.origin, {
     autoConnect: false,
     withCredentials: true,
     // Start with HTTP long-polling (plain HTTP, always allowed) and upgrade to

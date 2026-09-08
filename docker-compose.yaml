@@ -49,8 +49,15 @@ services:
       context: .
       dockerfile: ./apps/web/Dockerfile.web
       args:
-        - API_URL=${API_URL:-http://localhost:4300/api}
-        - WS_URL=${WS_URL:-ws://localhost:4300}
+        # The web bundle is served same-origin behind this nginx, which proxies
+        # /api and /socket.io to the API. Keep these RELATIVE (not the server's
+        # absolute API_URL) so the SAME image talks to whatever host serves it:
+        # localhost when you run it locally, the LAN IP in prod. Baking an
+        # absolute host here is what makes a local container call prod instead.
+        # Only set WEB_API_URL/WEB_WS_URL if the frontend is served from a
+        # different origin than the API.
+        - API_URL=${WEB_API_URL:-/api}
+        - WS_URL=${WEB_WS_URL:-}
     depends_on:
       - api
     ports:
