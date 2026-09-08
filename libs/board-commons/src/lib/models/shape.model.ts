@@ -12,6 +12,7 @@ export interface Shape {
   width: number;
   height: number;
   rotation: number;
+  text?: string;
   backgroundColor?: string | null;
   borderColor?: string | null;
   borderWidth?: number | null;

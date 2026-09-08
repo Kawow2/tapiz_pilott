@@ -1,10 +1,18 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ElementRef,
   computed,
+  effect,
+  inject,
   input,
+  signal,
+  viewChild,
 } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Shape, TuNode } from '@tapiz/board-commons';
+import { BoardActions } from '@tapiz/board-commons/actions/board.actions';
+import { explicitEffect } from 'ngxtension/explicit-effect';
 import { PortalComponent } from '@tapiz/ui/portal';
 import { NodeSpaceComponent } from '../node-space';
 import { ShapeToolbarComponent } from './shape-toolbar.component';
@@ -16,6 +24,7 @@ import { ShapeToolbarComponent } from './shape-toolbar.component';
       [node]="node()"
       [resize]="true"
       [rotate]="true"
+      [enabled]="!edit()"
       [showOutline]="focus()">
       <svg
         class="shape"
@@ -63,6 +72,25 @@ import { ShapeToolbarComponent } from './shape-toolbar.component';
           }
         }
       </svg>
+
+      @if (node().content.shapeType !== 'line') {
+        <div
+          class="text-layer"
+          (dblclick)="startEdit($event)">
+          @if (edit()) {
+            <textarea
+              #textarea
+              class="editor"
+              [value]="editText()"
+              (input)="editText.set(textarea.value)"
+              (pointerdown)="$event.stopPropagation()"
+              (blur)="save()"
+              (keydown.escape)="save()"></textarea>
+          } @else if (node().content.text) {
+            <div class="text">{{ node().content.text }}</div>
+          }
+        </div>
+      }
     </tapiz-node-space>
 
     @if (focus()) {
@@ -76,9 +104,15 @@ import { ShapeToolbarComponent } from './shape-toolbar.component';
   imports: [NodeSpaceComponent, PortalComponent, ShapeToolbarComponent],
 })
 export class ShapeComponent {
+  #store = inject(Store);
+
   node = input.required<TuNode<Shape>>();
   pasted = input.required<boolean>();
   focus = input.required<boolean>();
+
+  edit = signal(false);
+  editText = signal('');
+  textarea = viewChild<ElementRef<HTMLTextAreaElement>>('textarea');
 
   width = computed(() => this.node().content.width);
   height = computed(() => this.node().content.height);
@@ -110,4 +144,64 @@ export class ShapeComponent {
 
     return `${w / 2},${i} ${w - i},${h - i} ${i},${h - i}`;
   });
+
+  constructor() {
+    // Focus the textarea once it is rendered.
+    effect(() => {
+      const textarea = this.textarea();
+
+      if (this.edit() && textarea) {
+        textarea.nativeElement.focus();
+      }
+    });
+
+    // Losing focus (clicking away) commits and closes the editor.
+    explicitEffect([this.focus], ([focus]) => {
+      if (!focus && this.edit()) {
+        this.save();
+      }
+    });
+  }
+
+  startEdit(event: MouseEvent) {
+    if (this.node().content.shapeType === 'line') {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.editText.set(this.node().content.text ?? '');
+    this.edit.set(true);
+  }
+
+  save() {
+    if (!this.edit()) {
+      return;
+    }
+
+    this.edit.set(false);
+
+    const text = this.editText();
+
+    if (text === (this.node().content.text ?? '')) {
+      return;
+    }
+
+    this.#store.dispatch(
+      BoardActions.batchNodeActions({
+        history: true,
+        actions: [
+          {
+            op: 'patch',
+            data: {
+              id: this.node().id,
+              type: this.node().type,
+              content: { text },
+            },
+          },
+        ],
+      }),
+    );
+  }
 }

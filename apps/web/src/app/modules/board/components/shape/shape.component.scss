@@ -10,3 +10,40 @@
   block-size: 100%;
   overflow: visible;
 }
+
+.text-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.text {
+  inline-size: 100%;
+  max-block-size: 100%;
+  overflow: hidden;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #1e254b;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.editor {
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  text-align: center;
+  color: #1e254b;
+  font-size: 24px;
+  line-height: 1.25;
+  font-family: inherit;
+}
