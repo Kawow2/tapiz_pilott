@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { TuNode } from '@tapiz/board-commons';
 import { BoardFacade } from '../../../services/board-facade.service';
 import { CopyPasteService } from '../../../services/copy-paste.service';
+import { ClipboardImageService } from '../../../services/clipboard-image.service';
 import { isInputField } from '@tapiz/cdk/utils/is-input-field';
 import { boardPageFeature } from '../reducers/boardPage.reducer';
 
@@ -27,6 +28,21 @@ export class CopyPasteDirective {
     }
   }
 
+  // Paste an image or GIF copied from anywhere (e.g. Google Images) straight
+  // onto the board. Skipped inside inputs/editors so they paste text normally.
+  @HostListener('document:paste', ['$event'])
+  public async imagePasteEvent(event: ClipboardEvent) {
+    if (isInputField()) {
+      return;
+    }
+
+    const handled = await this.clipboardImage.pasteFromEvent(event);
+
+    if (handled) {
+      event.preventDefault();
+    }
+  }
+
   @HostListener('document:keydown.control.d', ['$event'])
   @HostListener('document:keydown.meta.d', ['$event'])
   public duplicateEvent(event: Event) {
@@ -40,6 +56,7 @@ export class CopyPasteDirective {
   private store = inject(Store);
   private boardFacade = inject(BoardFacade);
   private copyPasteService = inject(CopyPasteService);
+  private clipboardImage = inject(ClipboardImageService);
   private selectFocusId = this.store.selectSignal(
     boardPageFeature.selectFocusId,
   );
