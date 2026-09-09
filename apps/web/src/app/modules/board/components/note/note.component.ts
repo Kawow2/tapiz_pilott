@@ -229,10 +229,15 @@ export class NoteComponent {
       const textHidden = this.node().content.textHidden ?? null;
 
       // A board-wide state set by an admin takes precedence over everything
-      // else. When hidden, the notes are visible only to admins ("Vue
-      // uniquement pour moi"); when explicitly shown, visible to everyone.
+      // else. When hidden, a user still sees their own notes, admins see every
+      // note, and everyone else sees nothing. When explicitly shown, everyone
+      // sees everything.
       if (textHidden !== null) {
-        return textHidden ? this.#isAdmin() : true;
+        if (textHidden) {
+          return this.isOwner() || this.#isAdmin();
+        }
+
+        return true;
       }
 
       // No board-wide rule: a user always sees their own notes; for everyone

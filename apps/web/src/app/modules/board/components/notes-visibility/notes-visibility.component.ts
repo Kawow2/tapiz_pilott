@@ -72,7 +72,7 @@ import { LucideAngularModule } from 'lucide-angular';
           <p>
             {{
               isAdmin()
-                ? 'Les notes ne sont visibles que par les admins'
+                ? 'Chacun ne voit que ses propres notes ; les admins les voient toutes'
                 : 'Vos notes ne sont visibles que par vous'
             }}
           </p>
