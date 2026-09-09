@@ -43,6 +43,9 @@
     @if (!isAdmin()) {
       <span class="board-name">{{ name() }}</span>
     }
+    @if (isAdmin()) {
+      <span class="role-badge">(admin)</span>
+    }
   </div>
 } @else {
   <span class="board-name">Demo</span>

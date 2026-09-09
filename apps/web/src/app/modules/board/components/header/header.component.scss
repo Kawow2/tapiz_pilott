@@ -57,6 +57,13 @@
     sans-serif;
 }
 
+.breadcrumb .role-badge {
+  align-self: center;
+  color: var(--primary-color);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .edit-name {
   display: flex;
   align-items: center;
