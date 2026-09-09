@@ -49,6 +49,7 @@ import { BoardPageActions } from '../../actions/board-page.actions';
 import { NodeToolbarComponent } from '../node-toolbar/node-toolbar.component';
 import { appFeature } from '../../../../+state/app.reducer';
 import { NotesService } from '../../services/notes.service';
+import { InteractionModeService } from '../../services/interaction-mode.service';
 import { NoteColorToolbarComponent } from './note-color-toolbar.component';
 
 @Component({
@@ -93,6 +94,7 @@ export class NoteComponent {
   #nodesStore = inject(NodesStore);
   #nodeStore = inject(NodeStore);
   #notesService = inject(NotesService);
+  #interactionMode = inject(InteractionModeService);
   #hotkeysService = inject(HotkeysService);
   #boardFacade = inject(BoardFacade);
   #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
@@ -407,7 +409,8 @@ export class NoteComponent {
       this.#voteEvent(event);
     } else if (this.emojiMode()) {
       this.#emojiEvent(event);
-    } else {
+    } else if (this.#interactionMode.selectsOnPointerDown(event.button)) {
+      // A middle-click, or any click in "move" mode, pans rather than selects.
       this.#nodesStore.setFocusNode({
         id: this.node().id,
         ctrlKey: event.ctrlKey || event.shiftKey,

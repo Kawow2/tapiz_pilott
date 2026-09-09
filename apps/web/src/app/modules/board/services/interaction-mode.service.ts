@@ -19,4 +19,20 @@ export class InteractionModeService {
   toggle() {
     this.mode.update((mode) => (mode === 'select' ? 'move' : 'select'));
   }
+
+  // Whether pressing `button` on a node should select it. The middle button is
+  // always a pan gesture, and in "move" mode the left button pans the view, so
+  // neither selects. The left button in "select" mode and the right button
+  // (used to target the context menu) still select.
+  selectsOnPointerDown(button: number): boolean {
+    if (button === 1) {
+      return false;
+    }
+
+    if (button === 0 && this.mode() === 'move') {
+      return false;
+    }
+
+    return true;
+  }
 }

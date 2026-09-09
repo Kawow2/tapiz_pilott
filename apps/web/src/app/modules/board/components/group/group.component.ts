@@ -18,6 +18,7 @@ import { ResizeHandlerSingleComponent } from '@tapiz/ui/resize';
 import { hostBinding } from 'ngxtension/host-binding';
 import { explicitEffect } from 'ngxtension/explicit-effect';
 import { NodesStore } from '../../services/nodes.store';
+import { InteractionModeService } from '../../services/interaction-mode.service';
 import { BoardActions } from '@tapiz/board-commons/actions/board.actions';
 import { NodeStore } from '../../services/node.store';
 import { MultiDragService } from '@tapiz/cdk/services/multi-drag.service';
@@ -62,6 +63,7 @@ import { boardPageFeature } from '../../reducers/boardPage.reducer';
 })
 export class GroupComponent {
   #nodesStore = inject(NodesStore);
+  #interactionMode = inject(InteractionModeService);
   #nodeStore = inject(NodeStore);
   #store = inject(Store);
   #el = inject(ElementRef);
@@ -197,7 +199,8 @@ export class GroupComponent {
           }),
         );
       }
-    } else {
+    } else if (this.#interactionMode.selectsOnPointerDown(event.button)) {
+      // A middle-click, or any click in "move" mode, pans rather than selects.
       this.#nodesStore.setFocusNode({
         id: this.node().id,
         ctrlKey: event.ctrlKey || event.shiftKey,

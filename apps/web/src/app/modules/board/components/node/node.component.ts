@@ -24,6 +24,7 @@ import { boardPageFeature } from '../../reducers/boardPage.reducer';
 import { DynamicComponent } from './dynamic-component';
 import { compose, rotateDEG, translate, toCSS } from 'transformation-matrix';
 import { NodeStore } from '../../services/node.store';
+import { InteractionModeService } from '../../services/interaction-mode.service';
 import { isInputField } from '@tapiz/cdk/utils/is-input-field';
 import { input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -50,6 +51,7 @@ export class NodeComponent implements OnInit {
   #el = inject(ElementRef<HTMLElement>);
   #store = inject(Store);
   #injector = inject(Injector);
+  #interactionMode = inject(InteractionModeService);
   cmp?: ComponentRef<DynamicComponent>;
 
   get layer() {
@@ -97,6 +99,11 @@ export class NodeComponent implements OnInit {
   // default focus, some components may override this with this.#nodesStore.setFocusNode
   @HostListener('mousedown', ['$event'])
   mousedown(event: MouseEvent) {
+    // A middle-click, or any click in "move" mode, pans rather than selects.
+    if (!this.#interactionMode.selectsOnPointerDown(event.button)) {
+      return;
+    }
+
     this.#store.dispatch(
       BoardPageActions.setFocusId({
         focusId: this.node().id,

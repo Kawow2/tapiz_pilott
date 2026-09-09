@@ -31,6 +31,7 @@ import {
 } from '../arrow-utils';
 import { BoardActions } from '../../../actions/board.actions';
 import { NodesActions } from '../../../services/nodes-actions';
+import { InteractionModeService } from '../../../services/interaction-mode.service';
 
 @Component({
   selector: 'tapiz-arrow-node',
@@ -85,6 +86,7 @@ export class ArrowNodeComponent {
   #destroyRef = inject(DestroyRef);
   #nodesActions = inject(NodesActions);
   #store = inject(Store);
+  #interactionMode = inject(InteractionModeService);
   #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
   #position = this.#store.selectSignal(boardPageFeature.selectPosition);
   #popup = this.#store.selectSignal(boardPageFeature.selectPopupOpen);
@@ -137,6 +139,11 @@ export class ArrowNodeComponent {
   }
 
   selectArrow(event: MouseEvent) {
+    // A middle-click, or any click in "move" mode, pans rather than selects.
+    if (!this.#interactionMode.selectsOnPointerDown(event.button)) {
+      return;
+    }
+
     this.#store.dispatch(BoardPageActions.setPopupOpen({ popup: 'arrow' }));
     this.#focusArrow(event);
   }
