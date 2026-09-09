@@ -448,9 +448,12 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
         // In "select" mode a left-button drag on the empty board deselects and
         // starts a rubber-band selection. In "move" mode (and for right-button
         // or space) the drag pans instead, handled by the move stream.
+        // Skip while a creation tool is active (it disables node selection and
+        // handles the drag itself, e.g. drawing a shape's area).
         if (
           event.button === 0 &&
           !panInProgress &&
+          this.nodeSelectionEnabled() &&
           this.interactionMode.mode() === 'select'
         ) {
           this.store.dispatch(BoardPageActions.setFocusId({ focusId: '' }));
