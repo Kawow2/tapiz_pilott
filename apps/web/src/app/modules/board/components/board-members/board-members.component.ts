@@ -31,7 +31,7 @@ import { BoardPageActions } from '../../actions/board-page.actions';
         [invitations]="[]"
         [members]="members()"
         [editable]="isAdmin()"
-        [canDelete]="false"
+        [canDelete]="isAdmin()"
         [currentUserId]="currentUserId()"
         (roleMemberChanged)="onRoleMemberChanged($event)"
         (deletedMember)="onDeleteMember($event)"
