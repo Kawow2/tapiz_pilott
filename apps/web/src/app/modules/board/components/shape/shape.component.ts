@@ -18,6 +18,7 @@ import { ShapeToolbarComponent } from './shape-toolbar.component';
 import { EditorPortalComponent } from '../editor-portal/editor-portal.component';
 import { NodeToolbarComponent } from '../node-toolbar/node-toolbar.component';
 import { HistoryService } from '../../services/history.service';
+import { getShapeGeometry } from './shape.utils';
 
 @Component({
   selector: 'tapiz-shape',
@@ -163,24 +164,19 @@ export class ShapeComponent {
     return this.node().content.backgroundColor ?? '#ffffff';
   });
 
-  inset = computed(() => this.strokeWidth() / 2);
-  viewBox = computed(() => `0 0 ${this.width()} ${this.height()}`);
-  centerX = computed(() => this.width() / 2);
-  centerY = computed(() => this.height() / 2);
-  innerWidth = computed(() => Math.max(0, this.width() - this.strokeWidth()));
-  innerHeight = computed(() => Math.max(0, this.height() - this.strokeWidth()));
-  radiusX = computed(() => Math.max(0, (this.width() - this.strokeWidth()) / 2));
-  radiusY = computed(
-    () => Math.max(0, (this.height() - this.strokeWidth()) / 2),
+  #geometry = computed(() =>
+    getShapeGeometry(this.width(), this.height(), this.strokeWidth()),
   );
-  lineX2 = computed(() => Math.max(0, this.width() - this.inset()));
-  trianglePoints = computed(() => {
-    const w = this.width();
-    const h = this.height();
-    const i = this.inset();
-
-    return `${w / 2},${i} ${w - i},${h - i} ${i},${h - i}`;
-  });
+  inset = computed(() => this.#geometry().inset);
+  viewBox = computed(() => this.#geometry().viewBox);
+  centerX = computed(() => this.#geometry().centerX);
+  centerY = computed(() => this.#geometry().centerY);
+  innerWidth = computed(() => this.#geometry().innerWidth);
+  innerHeight = computed(() => this.#geometry().innerHeight);
+  radiusX = computed(() => this.#geometry().radiusX);
+  radiusY = computed(() => this.#geometry().radiusY);
+  lineX2 = computed(() => this.#geometry().lineX2);
+  trianglePoints = computed(() => this.#geometry().trianglePoints);
 
   constructor() {
     // Bracket the edit for a single, clean undo entry.
