@@ -5,10 +5,105 @@
   block-size: 100%;
 }
 
-img {
+.frame {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+}
+
+.picture {
+  position: absolute;
   user-select: none;
   display: block;
   pointer-events: none;
-  width: 100%;
-  height: 100%;
+}
+
+.crop-editor {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.crop-full {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+
+.crop-rect {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid #fff;
+  outline: 1px solid rgba(0, 0, 0, 0.4);
+  // Dim everything outside the crop rectangle.
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+  cursor: move;
+}
+
+.handle {
+  position: absolute;
+  inline-size: 12px;
+  block-size: 12px;
+  background: #fff;
+  border: 1px solid #1e254b;
+  border-radius: 2px;
+
+  &.nw {
+    inset-block-start: -6px;
+    inset-inline-start: -6px;
+    cursor: nwse-resize;
+  }
+
+  &.ne {
+    inset-block-start: -6px;
+    inset-inline-end: -6px;
+    cursor: nesw-resize;
+  }
+
+  &.sw {
+    inset-block-end: -6px;
+    inset-inline-start: -6px;
+    cursor: nesw-resize;
+  }
+
+  &.se {
+    inset-block-end: -6px;
+    inset-inline-end: -6px;
+    cursor: nwse-resize;
+  }
+}
+
+.crop-toolbar {
+  position: absolute;
+  inset-block-end: 8px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--white, #fff);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+
+  button {
+    padding: 4px 10px;
+    border: 1px solid var(--grey-30, #e8e9ea);
+    border-radius: 6px;
+    background: var(--white, #fff);
+    font-size: 12px;
+    cursor: pointer;
+
+    &.primary {
+      background: var(--primary, #1e254b);
+      color: #fff;
+      border-color: var(--primary, #1e254b);
+    }
+  }
 }
