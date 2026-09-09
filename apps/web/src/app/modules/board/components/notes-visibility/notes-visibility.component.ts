@@ -74,28 +74,34 @@ export class NotesVisibilityComponent {
   #boardFacade = inject(BoardFacade);
   #users = this.#boardFacade.users;
   userId = this.#store.selectSignal(boardPageFeature.selectUserId);
+  isAdmin = this.#store.selectSignal(boardPageFeature.selectIsAdmin);
   currentUser = computed(() => {
     return this.#users()?.find((user) => user.id === this.userId());
   });
   visible = computed(() => this.currentUser()?.visible);
 
   setVisibility(visible: boolean) {
-    // Hide or show the text of EVERY note on the board at once.
-    const notesActions: StateActions[] = this.#boardFacade
-      .get()
-      .filter(isNote)
-      .map((it) => {
-        return {
-          data: {
-            type: 'note',
-            id: it.id,
-            content: {
-              textHidden: !visible,
-            },
-          },
-          op: 'patch',
-        };
-      });
+    // Only an admin/owner can hide or show EVERY note on the board at once.
+    // This board-wide rule (each note's textHidden) takes precedence over a
+    // user's own per-user visibility. A regular user changes only their own
+    // flag below, which affects only the notes they own.
+    const notesActions: StateActions[] = this.isAdmin()
+      ? this.#boardFacade
+          .get()
+          .filter(isNote)
+          .map((it) => {
+            return {
+              data: {
+                type: 'note',
+                id: it.id,
+                content: {
+                  textHidden: !visible,
+                },
+              },
+              op: 'patch',
+            };
+          })
+      : [];
 
     this.#store.dispatch(
       BoardActions.batchNodeActions({
