@@ -113,6 +113,7 @@ export class NoteComponent {
   );
   #userVotes = this.#store.selectSignal(boardPageFeature.selectShowUserVotes);
   #currentUserId = this.#store.selectSignal(boardPageFeature.selectUserId);
+  #isAdmin = this.#store.selectSignal(boardPageFeature.selectIsAdmin);
   showNoteAuthor = computed(() => {
     const noteUserId = this.node().content.ownerId;
     const currentUserId = this.#currentUserId();
@@ -225,19 +226,19 @@ export class NoteComponent {
   visible = hostBinding(
     'class.visible',
     computed(() => {
-      // A user always sees their own notes. Hiding a note (the board-wide
-      // "hide all" or a per-user private setting) only hides it from OTHER
-      // people, never from its own author.
-      if (this.isOwner()) {
-        return true;
-      }
-
-      // For everyone else, an explicit board-wide state (admin "hide all")
-      // takes precedence over the note owner's personal visibility.
       const textHidden = this.node().content.textHidden ?? null;
 
+      // A board-wide state set by an admin takes precedence over everything
+      // else. When hidden, the notes are visible only to admins ("Vue
+      // uniquement pour moi"); when explicitly shown, visible to everyone.
       if (textHidden !== null) {
-        return !textHidden;
+        return textHidden ? this.#isAdmin() : true;
+      }
+
+      // No board-wide rule: a user always sees their own notes; for everyone
+      // else the note owner's personal visibility applies.
+      if (this.isOwner()) {
+        return true;
       }
 
       return this.user()?.visible ?? true;

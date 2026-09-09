@@ -37,7 +37,7 @@ import { LucideAngularModule } from 'lucide-angular';
               name="eye"
               size="18" />
           } @else {
-            Private
+            {{ isAdmin() ? 'Vue uniquement pour moi' : 'Private' }}
             <lucide-icon
               name="eye-closed"
               size="18" />
@@ -55,15 +55,27 @@ import { LucideAngularModule } from 'lucide-angular';
           [class.selected]="visible()"
           (cdkMenuItemTriggered)="setVisibility(true)">
           <p>Public</p>
-          <p>Your notes are visible to everyone</p>
+          <p>
+            {{
+              isAdmin()
+                ? 'Toutes les notes sont visibles par tout le monde'
+                : 'Vos notes sont visibles par tout le monde'
+            }}
+          </p>
         </button>
         <button
           cdkMenuItemRadio
           class="radio-menu-item"
           [class.selected]="!visible()"
           (cdkMenuItemTriggered)="setVisibility(false)">
-          <p>Private</p>
-          <p>Your notes are visible only to you</p>
+          <p>{{ isAdmin() ? 'Vue uniquement pour moi' : 'Private' }}</p>
+          <p>
+            {{
+              isAdmin()
+                ? 'Les notes ne sont visibles que par les admins'
+                : 'Vos notes ne sont visibles que par vous'
+            }}
+          </p>
         </button>
       </div>
     </ng-template>
