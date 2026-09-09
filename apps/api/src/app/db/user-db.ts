@@ -45,10 +45,12 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function getUserByUsername(username: string) {
+  // Usernames are unique case-insensitively, so "Bob" and "bob" are the same
+  // account for both the registration duplicate check and login.
   const users = await db
     .select()
     .from(schema.accounts)
-    .where(eq(schema.accounts.username, username));
+    .where(sql`lower(${schema.accounts.username}) = lower(${username})`);
 
   return users.at(0);
 }
