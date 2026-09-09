@@ -53,6 +53,7 @@ import { ArrowsWrapperComponent } from '../components/arrows/arrows-wrapper/arro
 import { ContextMenuComponent } from '@tapiz/ui/context-menu/context-menu.component';
 import { ContextMenuStore } from '@tapiz/ui/context-menu/context-menu.store';
 import { BoardContextMenuComponent } from '../components/board-context-menu/board-contextmenu.component';
+import { ZoneService } from '../components/zone/zone.service';
 import { HistoryService } from '../services/history.service';
 import { MoveService } from '@tapiz/cdk/services/move.service';
 import { RotateService } from '@tapiz/ui/rotate/rotate.service';
@@ -155,6 +156,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   private notesService = inject(NotesService);
   private boardFacade = inject(BoardFacade);
   private contextMenuStore = inject(ContextMenuStore);
+  private zoneService = inject(ZoneService);
   private moveService = inject(MoveService);
   private rotateService = inject(RotateService);
   private subscriptionService = inject(SubscriptionService);
@@ -431,9 +433,19 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
     this.boardMoveService.listen(this.el.nativeElement);
 
     this.boardMoveService.mouseDown$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.store.dispatch(BoardPageActions.setFocusId({ focusId: '' }));
+      .pipe(
+        withLatestFrom(
+          this.store.select(boardPageFeature.selectPanInProgress),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(([event, panInProgress]) => {
+        // Left-button drag on the empty board deselects and starts a
+        // rubber-band selection. Right-button / space drag pans instead.
+        if (event.button === 0 && !panInProgress) {
+          this.store.dispatch(BoardPageActions.setFocusId({ focusId: '' }));
+          this.zoneService.boxSelect(event);
+        }
       });
 
     this.boardMoveService.mouseMove$

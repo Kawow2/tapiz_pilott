@@ -38,6 +38,10 @@ export class ZoneService {
   selectMoveEnabled = this.#store.selectSignal(
     boardPageFeature.selectMoveEnabled,
   );
+  #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
+  #position = this.#store.selectSignal(boardPageFeature.selectPosition);
+  #userId = this.#store.selectSignal(boardPageFeature.selectUserId);
+  #boardMode = this.#store.selectSignal(boardPageFeature.selectBoardMode);
 
   areaSelector = computed(() => this.#areaSelector());
 
@@ -194,6 +198,85 @@ export class ZoneService {
     });
 
     return obs$;
+  }
+
+  // Rubber-band selection driven by a left-button drag on the empty board.
+  boxSelect(mouseDownEvent: MouseEvent) {
+    const zoom = this.#zoom();
+    const position = this.#position();
+    const layer = this.#boardMode();
+    const userId = this.#userId();
+    const startX = mouseDownEvent.clientX;
+    const startY = mouseDownEvent.clientY;
+    const originalMoveEnabled = this.selectMoveEnabled();
+
+    this.#setMovement(false);
+    this.#setNodeSelection(false);
+
+    const startBoard = {
+      x: (-position.x + startX) / zoom,
+      y: (-position.y + startY) / zoom,
+    };
+
+    this.#boardMoveService.mouseMove$
+      .pipe(
+        map((event) => {
+          const zoneDom = document.querySelector<HTMLElement>('tapiz-zone');
+          let width = (event.x - startX) / zoom;
+          let height = (event.y - startY) / zoom;
+          const finalPosition = { ...startBoard };
+          const mousePosition = {
+            x: (-position.x + event.x) / zoom,
+            y: (-position.y + event.y) / zoom,
+          };
+
+          if (width < 0) {
+            width = -width;
+            finalPosition.x -= width;
+          }
+
+          if (height < 0) {
+            height = -height;
+            finalPosition.y -= height;
+          }
+
+          return {
+            userId,
+            style: 'select' as const,
+            layer,
+            size: { width, height },
+            position: finalPosition,
+            mousePosition,
+            relativeRect: zoneDom?.getBoundingClientRect() ?? new DOMRect(),
+          };
+        }),
+        startWith({
+          userId,
+          style: 'select' as const,
+          layer,
+          size: { width: 0, height: 0 },
+          position: startBoard,
+          mousePosition: startBoard,
+          relativeRect: new DOMRect(),
+        }),
+        takeUntil(this.#boardMoveService.mouseUp$),
+        finalize(() => {
+          const result = this.#areaSelector();
+          this.#areaSelector.set(null);
+          this.#setMovement(originalMoveEnabled);
+          this.#setNodeSelection(true);
+
+          if (result && (result.size.width > 2 || result.size.height > 2)) {
+            const ids = this.nodesInZone({
+              relativeRect: result.relativeRect,
+              layer: result.layer,
+            });
+
+            this.#store.dispatch(BoardPageActions.selectNodes({ ids }));
+          }
+        }),
+      )
+      .subscribe((area) => this.#areaSelector.set(area));
   }
 
   nodesInZone(area: { relativeRect: DOMRect; layer: number }) {

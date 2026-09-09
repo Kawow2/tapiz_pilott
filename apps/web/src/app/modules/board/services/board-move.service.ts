@@ -67,7 +67,11 @@ export class BoardMoveService {
       share(),
     );
 
+    // Panning with the mouse is right-button drag (or space held). Left-button
+    // drag on the empty board is a rubber-band selection, handled elsewhere.
     this.move$ = this.mouseDown$.pipe(
+      withLatestFrom(this.store.select(boardPageFeature.selectPanInProgress)),
+      filter(([event, panInProgress]) => event.button === 2 || panInProgress),
       switchMap(() => {
         return this.mouseMove$.pipe(
           pairwise(),
