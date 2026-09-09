@@ -106,4 +106,8 @@
     (click)="addAdjacentNote('bottom')">
     +
   </button>
+
+  <tapiz-portal name="node-toolbar">
+    <tapiz-note-color-toolbar [node]="node()" />
+  </tapiz-portal>
 }

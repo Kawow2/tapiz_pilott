@@ -49,6 +49,7 @@ import { BoardPageActions } from '../../actions/board-page.actions';
 import { NodeToolbarComponent } from '../node-toolbar/node-toolbar.component';
 import { appFeature } from '../../../../+state/app.reducer';
 import { NotesService } from '../../services/notes.service';
+import { NoteColorToolbarComponent } from './note-color-toolbar.component';
 
 @Component({
   selector: 'tapiz-note',
@@ -64,6 +65,7 @@ import { NotesService } from '../../services/notes.service';
     EditorPortalComponent,
     PortalComponent,
     NodeToolbarComponent,
+    NoteColorToolbarComponent,
   ],
   host: {
     '[class.drawing]': 'drawing()',
