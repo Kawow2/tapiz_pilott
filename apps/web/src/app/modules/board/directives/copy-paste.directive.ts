@@ -51,8 +51,8 @@ export class CopyPasteDirective {
   public async paste() {
     this.copyPasteService.paste({
       history: true,
-      incX: 10,
-      incY: 10,
+      incX: 20,
+      incY: -20,
     });
   }
 

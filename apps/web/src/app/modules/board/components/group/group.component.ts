@@ -200,7 +200,7 @@ export class GroupComponent {
     } else {
       this.#nodesStore.setFocusNode({
         id: this.node().id,
-        ctrlKey: event.ctrlKey,
+        ctrlKey: event.ctrlKey || event.shiftKey,
       });
     }
   }

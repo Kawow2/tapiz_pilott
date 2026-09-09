@@ -52,6 +52,9 @@ textarea {
   --emoji-height: 33px;
 
   display: block;
+  // Positioning context for the quick-add (+) buttons that sit just outside
+  // the note's edges.
+  position: relative;
   inline-size: 100%;
   block-size: 100%;
   transition: transform 0.1s ease-in-out;

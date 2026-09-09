@@ -170,7 +170,7 @@ export class ArrowNodeComponent {
     this.#store.dispatch(
       BoardPageActions.setFocusId({
         focusId: this.node().id,
-        ctrlKey: event.ctrlKey,
+        ctrlKey: event.ctrlKey || event.shiftKey,
       }),
     );
   }
