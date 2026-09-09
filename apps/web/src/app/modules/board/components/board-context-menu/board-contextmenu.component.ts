@@ -5,7 +5,6 @@ import {
   ContextMenuItem,
   ContextMenuStore,
 } from '@tapiz/ui/context-menu/context-menu.store';
-import { combineLatest, take } from 'rxjs';
 import { boardPageFeature } from '../../reducers/boardPage.reducer';
 import { BoardComponent } from '../../board/board.component';
 import { BoardActions } from '../../actions/board.actions';
@@ -342,26 +341,8 @@ export class BoardContextMenuComponent implements OnInit {
           return actions;
         }
 
-        return [
-          {
-            label: 'Paste',
-            icon: 'content_paste',
-            help: 'Ctrl + V',
-            action: (event: MouseEvent) => {
-              combineLatest([
-                this.store.select(boardPageFeature.selectPosition),
-                this.store.select(boardPageFeature.selectZoom),
-              ])
-                .pipe(take(1))
-                .subscribe(([position, zoom]) => {
-                  this.copyPasteService.paste({
-                    x: (-position.x + event.x) / zoom,
-                    y: (-position.y + event.y) / zoom,
-                  });
-                });
-            },
-          },
-        ];
+        // Nothing selected: no context menu (paste is handled by Ctrl/Cmd+V).
+        return [];
       },
     });
   }

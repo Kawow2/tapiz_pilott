@@ -103,12 +103,18 @@ export class ContextMenuStore {
         }
       }
 
+      const menuItems = items();
+
+      if (!menuItems.length) {
+        return;
+      }
+
       const { x, y } = {
         x: event.clientX,
         y: event.clientY,
       };
 
-      this.open({ position: { x, y }, items: items() });
+      this.open({ position: { x, y }, items: menuItems });
     });
   }
 }
