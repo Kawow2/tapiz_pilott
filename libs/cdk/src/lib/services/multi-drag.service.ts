@@ -100,6 +100,12 @@ export class MultiDragService {
     fromEvent<MouseEvent>(draggable.handler, 'mousedown')
       .pipe(
         filter((e) => {
+          // Only the left button moves elements; middle/right are for panning
+          // the view.
+          if (e.button !== 0) {
+            return false;
+          }
+
           if ((e.target as HTMLElement).classList.contains('no-drag')) {
             return false;
           }

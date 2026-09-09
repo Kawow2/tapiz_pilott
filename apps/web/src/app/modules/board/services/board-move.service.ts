@@ -69,13 +69,14 @@ export class BoardMoveService {
       share(),
     );
 
-    // Panning with the mouse is right-button drag (or space held), or a
-    // left-button drag while the "move" tool is active. A left-button drag in
-    // "select" mode is a rubber-band selection, handled elsewhere.
+    // Panning with the mouse is a middle-button (wheel) or right-button drag,
+    // space held, or a left-button drag while the "move" tool is active. A
+    // left-button drag in "select" mode is a rubber-band selection.
     this.move$ = this.mouseDown$.pipe(
       withLatestFrom(this.store.select(boardPageFeature.selectPanInProgress)),
       filter(
         ([event, panInProgress]) =>
+          event.button === 1 ||
           event.button === 2 ||
           panInProgress ||
           (event.button === 0 && this.#interactionMode.mode() === 'move'),

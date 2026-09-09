@@ -1,8 +1,10 @@
 import { Directive, inject } from '@angular/core';
+import { map } from 'rxjs';
 import { MultiDragService } from '@tapiz/cdk/services/multi-drag.service';
 import { BoardFacade } from '../../../../services/board-facade.service';
 import { Store } from '@ngrx/store';
 import { boardPageFeature } from '../../reducers/boardPage.reducer';
+import { InteractionModeService } from '../../services/interaction-mode.service';
 import {
   BoardTuNode,
   isBoardTuNode,
@@ -23,12 +25,22 @@ export class BoardDragDirective {
   #boardFacade = inject(BoardFacade);
   #store = inject(Store);
   #nodesActions = inject(NodesActions);
+  #interactionMode = inject(InteractionModeService);
 
   readonly #focusIds = this.#store.selectSignal(boardPageFeature.selectFocusId);
 
   constructor() {
+    // Elements can only be dragged in "select" mode; in "move" mode a drag pans
+    // the view instead. The mode signal is read synchronously inside `map` so
+    // that every fresh subscription (MultiDragService re-subscribes on each
+    // mousedown via concatLatestFrom) sees the current mode without depending on
+    // an async `toObservable` emission.
+    const dragEnabled$ = this.#store
+      .select(boardPageFeature.selectDragEnabled)
+      .pipe(map((enabled) => enabled && this.#interactionMode.mode() === 'select'));
+
     this.#multiDragService.setUp({
-      dragEnabled: this.#store.select(boardPageFeature.selectDragEnabled),
+      dragEnabled: dragEnabled$,
       zoom: this.#store.select(boardPageFeature.selectZoom),
       relativePosition: this.#store.select(boardPageFeature.selectPosition),
       draggableIds: (triggerNode: string) => {
