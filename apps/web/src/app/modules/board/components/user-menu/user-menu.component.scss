@@ -45,6 +45,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  .role {
+    color: var(--primary-color);
+    font-weight: 600;
+    white-space: nowrap;
+  }
 }
 
 .avatar,

@@ -6,6 +6,9 @@
   <span class="username">
     <span class="name">{{ user().name }}</span>
     <span class="myself">(me)</span>
+    @if (isAdmin()) {
+      <span class="role">(admin)</span>
+    }
   </span>
   @if (picture()) {
     <img

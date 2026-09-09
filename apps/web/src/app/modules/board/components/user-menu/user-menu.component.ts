@@ -24,6 +24,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { ConfigService } from '../../../../services/config.service';
 import { UserApiService } from '../../../../services/user-api.service';
 import { BoardPageActions } from '../../actions/board-page.actions';
+import { boardPageFeature } from '../../reducers/boardPage.reducer';
 import { BoardWheelInputService } from '../../services/board-wheel-input.service';
 
 interface WheelInputOption {
@@ -48,6 +49,7 @@ export class UserMenuComponent {
   #wheelInput = inject(BoardWheelInputService);
   #snackBar = inject(MatSnackBar);
   #authUser = this.#store.selectSignal(appFeature.selectUser);
+  readonly isAdmin = this.#store.selectSignal(boardPageFeature.selectIsAdmin);
 
   user = input.required<User>();
   picture = input('');
