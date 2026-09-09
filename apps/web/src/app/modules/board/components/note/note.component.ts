@@ -223,12 +223,16 @@ export class NoteComponent {
   visible = hostBinding(
     'class.visible',
     computed(() => {
-      if (this.isOwner()) {
-        return true;
+      // An explicit hidden/shown state (e.g. the board-wide "hide all") wins,
+      // even over ownership, so everyone's notes can be hidden at once.
+      const textHidden = this.node().content.textHidden ?? null;
+
+      if (textHidden !== null) {
+        return !textHidden;
       }
 
-      if ((this.node().content.textHidden ?? null) !== null) {
-        return !this.node().content.textHidden;
+      if (this.isOwner()) {
+        return true;
       }
 
       return this.user()?.visible ?? true;
@@ -468,7 +472,24 @@ export class NoteComponent {
     this.editText.set(this.node().content.text);
   }
 
+  #anonymousMode = computed(
+    () => this.#boardFacade.settings()?.content.anonymousMode ?? false,
+  );
+
   setText(value: string) {
+    const content: Partial<Note> = { text: value };
+    const currentUserId = this.userId();
+
+    // The note shows the name of whoever writes in it (not the creator), unless
+    // the board is anonymous.
+    if (
+      !this.#anonymousMode() &&
+      currentUserId &&
+      this.node().content.ownerId !== currentUserId
+    ) {
+      content.ownerId = currentUserId;
+    }
+
     this.#store.dispatch(
       BoardActions.batchNodeActions({
         history: false,
@@ -477,9 +498,7 @@ export class NoteComponent {
             data: {
               type: 'note',
               id: this.node().id,
-              content: {
-                text: value,
-              },
+              content,
             },
             op: 'patch',
           },

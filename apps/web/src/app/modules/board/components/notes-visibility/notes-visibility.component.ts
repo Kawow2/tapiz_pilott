@@ -80,22 +80,17 @@ export class NotesVisibilityComponent {
   visible = computed(() => this.currentUser()?.visible);
 
   setVisibility(visible: boolean) {
+    // Hide or show the text of EVERY note on the board at once.
     const notesActions: StateActions[] = this.#boardFacade
       .get()
-      .filter((it) => {
-        return (
-          isNote(it) &&
-          (it.content.textHidden ?? null) !== null &&
-          it.content.ownerId === this.userId()
-        );
-      })
+      .filter(isNote)
       .map((it) => {
         return {
           data: {
             type: 'note',
             id: it.id,
             content: {
-              textHidden: null,
+              textHidden: !visible,
             },
           },
           op: 'patch',

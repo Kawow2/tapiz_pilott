@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { Note, Point, User, defaultUserSettings } from '@tapiz/board-commons';
 import { BoardActions } from '../actions/board.actions';
 import { BoardPageActions } from '../actions/board-page.actions';
-import { BoardFacade } from '../../../services/board-facade.service';
 import { NodesActions } from '../services/nodes-actions';
 import { boardPageFeature } from '../reducers/boardPage.reducer';
 import { appFeature } from '../../../+state/app.reducer';
@@ -15,8 +14,6 @@ export class NotesService {
   #store = inject(Store);
   #boardMode = this.#store.selectSignal(boardPageFeature.selectBoardMode);
   #user = this.#store.selectSignal(appFeature.selectUser);
-  #boardFacade = inject(BoardFacade);
-  #settings = this.#boardFacade.settings;
   #nodesActions = inject(NodesActions);
   #lastColor = '';
   #defaultSIZE = 300;
@@ -42,12 +39,13 @@ export class NotesService {
       this.#lastColor = color;
     }
 
-    const anonymousMode = this.#settings()?.content.anonymousMode ?? false;
     const noteDefaults =
       this.#user()?.settings.noteDefaults ?? defaultUserSettings.noteDefaults;
 
+    // Notes have no owner on creation: the name shown is whoever writes in it
+    // (set in the note component's setText), so notes can be created for anyone.
     const note = this.getNew({
-      ownerId: anonymousMode ? '' : userId,
+      ownerId: '',
       layer: this.#boardMode(),
       position,
     });
@@ -74,8 +72,6 @@ export class NotesService {
     height: number,
     color: string,
   ) {
-    const anonymousMode = this.#settings()?.content.anonymousMode ?? false;
-
     const note: Note = {
       text: '',
       votes: [],
@@ -83,7 +79,8 @@ export class NotesService {
       drawing: [],
       width,
       height,
-      ownerId: anonymousMode ? '' : userId,
+      // No owner on creation; the writer's name is set on edit.
+      ownerId: '',
       layer: this.#boardMode(),
       position: topLeft,
       color,
