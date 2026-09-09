@@ -48,6 +48,7 @@ import { boardPageFeature } from '../../reducers/boardPage.reducer';
 import { BoardPageActions } from '../../actions/board-page.actions';
 import { NodeToolbarComponent } from '../node-toolbar/node-toolbar.component';
 import { appFeature } from '../../../../+state/app.reducer';
+import { NotesService } from '../../services/notes.service';
 
 @Component({
   selector: 'tapiz-note',
@@ -89,6 +90,7 @@ export class NoteComponent {
   #drawingStore = inject(DrawingStore);
   #nodesStore = inject(NodesStore);
   #nodeStore = inject(NodeStore);
+  #notesService = inject(NotesService);
   #hotkeysService = inject(HotkeysService);
   #boardFacade = inject(BoardFacade);
   #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
@@ -513,6 +515,45 @@ export class NoteComponent {
 
   onMention(userId: string) {
     this.#nodesStore.mentionUser(userId, this.node().id);
+  }
+
+  // Quick-add buttons around a selected note (like mind-map tools).
+  showQuickAdd = computed(() => {
+    return (
+      this.focus() &&
+      !this.edit() &&
+      !this.drawing() &&
+      !this.voting() &&
+      !this.emojiMode() &&
+      this.visible()
+    );
+  });
+
+  addAdjacentNote(direction: 'left' | 'right' | 'bottom') {
+    const { position, width, height } = this.node().content;
+    const size = 300;
+    const gap = 40;
+
+    let center: Point;
+
+    if (direction === 'right') {
+      center = {
+        x: position.x + width + gap + size / 2,
+        y: position.y + height / 2,
+      };
+    } else if (direction === 'left') {
+      center = {
+        x: position.x - gap - size / 2,
+        y: position.y + height / 2,
+      };
+    } else {
+      center = {
+        x: position.x + width / 2,
+        y: position.y + height + gap + size / 2,
+      };
+    }
+
+    this.#notesService.createNote(this.userId(), center, this.color());
   }
 
   #voteEvent(event: MouseEvent) {

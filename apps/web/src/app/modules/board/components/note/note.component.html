@@ -80,3 +80,30 @@
     }
   </div>
 </tapiz-node-space>
+
+@if (showQuickAdd()) {
+  <button
+    type="button"
+    class="quick-add right"
+    title="Add note to the right"
+    (mousedown)="$event.stopPropagation()"
+    (click)="addAdjacentNote('right')">
+    +
+  </button>
+  <button
+    type="button"
+    class="quick-add left"
+    title="Add note to the left"
+    (mousedown)="$event.stopPropagation()"
+    (click)="addAdjacentNote('left')">
+    +
+  </button>
+  <button
+    type="button"
+    class="quick-add bottom"
+    title="Add note below"
+    (mousedown)="$event.stopPropagation()"
+    (click)="addAdjacentNote('bottom')">
+    +
+  </button>
+}

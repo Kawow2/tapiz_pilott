@@ -192,3 +192,47 @@ canvas {
   top: 0;
   left: 0;
 }
+
+// Quick-add buttons around a selected note: create an adjacent note.
+.quick-add {
+  position: absolute;
+  z-index: 3;
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary-color-button-bg, #1e254b);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  opacity: 0.85;
+  transition: opacity 0.1s ease;
+}
+
+.quick-add:hover {
+  opacity: 1;
+}
+
+.quick-add.right {
+  inset-inline-end: -36px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+}
+
+.quick-add.left {
+  inset-inline-start: -36px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+}
+
+.quick-add.bottom {
+  inset-block-end: -36px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+}
