@@ -225,16 +225,19 @@ export class NoteComponent {
   visible = hostBinding(
     'class.visible',
     computed(() => {
-      // An explicit hidden/shown state (e.g. the board-wide "hide all") wins,
-      // even over ownership, so everyone's notes can be hidden at once.
+      // A user always sees their own notes. Hiding a note (the board-wide
+      // "hide all" or a per-user private setting) only hides it from OTHER
+      // people, never from its own author.
+      if (this.isOwner()) {
+        return true;
+      }
+
+      // For everyone else, an explicit board-wide state (admin "hide all")
+      // takes precedence over the note owner's personal visibility.
       const textHidden = this.node().content.textHidden ?? null;
 
       if (textHidden !== null) {
         return !textHidden;
-      }
-
-      if (this.isOwner()) {
-        return true;
       }
 
       return this.user()?.visible ?? true;
