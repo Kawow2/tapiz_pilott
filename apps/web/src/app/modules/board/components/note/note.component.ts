@@ -531,29 +531,26 @@ export class NoteComponent {
 
   addAdjacentNote(direction: 'left' | 'right' | 'bottom') {
     const { position, width, height } = this.node().content;
-    const size = 300;
     const gap = 40;
 
-    let center: Point;
+    // Same size as this note, placed with aligned edges.
+    let topLeft: Point;
 
     if (direction === 'right') {
-      center = {
-        x: position.x + width + gap + size / 2,
-        y: position.y + height / 2,
-      };
+      topLeft = { x: position.x + width + gap, y: position.y };
     } else if (direction === 'left') {
-      center = {
-        x: position.x - gap - size / 2,
-        y: position.y + height / 2,
-      };
+      topLeft = { x: position.x - gap - width, y: position.y };
     } else {
-      center = {
-        x: position.x + width / 2,
-        y: position.y + height + gap + size / 2,
-      };
+      topLeft = { x: position.x, y: position.y + height + gap };
     }
 
-    this.#notesService.createNote(this.userId(), center, this.color());
+    this.#notesService.createAdjacentNote(
+      this.userId(),
+      topLeft,
+      width,
+      height,
+      this.color(),
+    );
   }
 
   #voteEvent(event: MouseEvent) {

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Note, Point, User, defaultUserSettings } from '@tapiz/board-commons';
 import { BoardActions } from '../actions/board.actions';
+import { BoardPageActions } from '../actions/board-page.actions';
 import { BoardFacade } from '../../../services/board-facade.service';
 import { NodesActions } from '../services/nodes-actions';
 import { boardPageFeature } from '../reducers/boardPage.reducer';
@@ -59,6 +60,39 @@ export class NotesService {
       BoardActions.batchNodeActions({
         history: true,
         actions: [action],
+      }),
+    );
+  }
+
+  // Create a note next to another one: same size, and "pasted" so it is
+  // selected (showing its + buttons) without opening the editor — which lets
+  // the user chain more notes by clicking a + again.
+  createAdjacentNote(
+    userId: User['id'],
+    topLeft: Point,
+    width: number,
+    height: number,
+    color: string,
+  ) {
+    const anonymousMode = this.#settings()?.content.anonymousMode ?? false;
+
+    const note: Note = {
+      text: '',
+      votes: [],
+      emojis: [],
+      drawing: [],
+      width,
+      height,
+      ownerId: anonymousMode ? '' : userId,
+      layer: this.#boardMode(),
+      position: topLeft,
+      color,
+    };
+
+    this.#store.dispatch(
+      BoardPageActions.pasteNodes({
+        nodes: [{ type: 'note', id: '', content: note }],
+        history: true,
       }),
     );
   }
