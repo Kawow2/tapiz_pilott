@@ -51,6 +51,7 @@ import { appFeature } from '../../../../+state/app.reducer';
 import { NotesService } from '../../services/notes.service';
 import { InteractionModeService } from '../../services/interaction-mode.service';
 import { NoteColorToolbarComponent } from './note-color-toolbar.component';
+import { isNoteVisible } from './note-visibility.util';
 
 @Component({
   selector: 'tapiz-note',
@@ -225,29 +226,14 @@ export class NoteComponent {
 
   visible = hostBinding(
     'class.visible',
-    computed(() => {
-      const textHidden = this.node().content.textHidden ?? null;
-
-      // A board-wide state set by an admin takes precedence over everything
-      // else. When hidden, a user still sees their own notes, admins see every
-      // note, and everyone else sees nothing. When explicitly shown, everyone
-      // sees everything.
-      if (textHidden !== null) {
-        if (textHidden) {
-          return this.isOwner() || this.#isAdmin();
-        }
-
-        return true;
-      }
-
-      // No board-wide rule: a user always sees their own notes; for everyone
-      // else the note owner's personal visibility applies.
-      if (this.isOwner()) {
-        return true;
-      }
-
-      return this.user()?.visible ?? true;
-    }),
+    computed(() =>
+      isNoteVisible({
+        textHidden: this.node().content.textHidden ?? null,
+        isOwner: this.isOwner(),
+        isAdmin: this.#isAdmin(),
+        ownerVisible: this.user()?.visible,
+      }),
+    ),
   );
 
   activeLayer = computed(() => {
