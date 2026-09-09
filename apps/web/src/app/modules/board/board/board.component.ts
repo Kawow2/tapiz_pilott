@@ -54,6 +54,8 @@ import { ContextMenuComponent } from '@tapiz/ui/context-menu/context-menu.compon
 import { ContextMenuStore } from '@tapiz/ui/context-menu/context-menu.store';
 import { BoardContextMenuComponent } from '../components/board-context-menu/board-contextmenu.component';
 import { ZoneService } from '../components/zone/zone.service';
+import { InteractionModeService } from '../services/interaction-mode.service';
+import { InteractionModeComponent } from '../components/interaction-mode/interaction-mode.component';
 import { HistoryService } from '../services/history.service';
 import { MoveService } from '@tapiz/cdk/services/move.service';
 import { RotateService } from '@tapiz/ui/rotate/rotate.service';
@@ -123,6 +125,7 @@ import { PingWallComponent } from '../components/ping/ping-wall.component';
     ZoomControlComponent,
     BoardNodesAlignComponent,
     BoardNodesStyleComponent,
+    InteractionModeComponent,
     LiveReactionWallComponent,
     PopupPortalComponent,
     NotesVisibilityComponent,
@@ -144,6 +147,7 @@ import { PingWallComponent } from '../components/ping/ping-wall.component';
     '[class.readonly]': 'isReadonlyUser()',
     '[class.edit-mode]': 'boardMode() === 1',
     '[class.following-user]': 'followUser()',
+    '[class.move-mode]': 'interactionMode.mode() === "move"',
   },
 })
 export class BoardComponent implements AfterViewInit, OnDestroy {
@@ -157,6 +161,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   private boardFacade = inject(BoardFacade);
   private contextMenuStore = inject(ContextMenuStore);
   private zoneService = inject(ZoneService);
+  protected interactionMode = inject(InteractionModeService);
   private moveService = inject(MoveService);
   private rotateService = inject(RotateService);
   private subscriptionService = inject(SubscriptionService);
@@ -440,9 +445,14 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(([event, panInProgress]) => {
-        // Left-button drag on the empty board deselects and starts a
-        // rubber-band selection. Right-button / space drag pans instead.
-        if (event.button === 0 && !panInProgress) {
+        // In "select" mode a left-button drag on the empty board deselects and
+        // starts a rubber-band selection. In "move" mode (and for right-button
+        // or space) the drag pans instead, handled by the move stream.
+        if (
+          event.button === 0 &&
+          !panInProgress &&
+          this.interactionMode.mode() === 'select'
+        ) {
           this.store.dispatch(BoardPageActions.setFocusId({ focusId: '' }));
           this.zoneService.boxSelect(event);
         }

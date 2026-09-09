@@ -17,6 +17,7 @@ import { Store } from '@ngrx/store';
 import { boardPageFeature } from '../reducers/boardPage.reducer';
 import { isBoardWheelTarget } from './board-wheel.utils';
 import { BoardWheelInputService } from './board-wheel-input.service';
+import { InteractionModeService } from './interaction-mode.service';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +25,7 @@ import { BoardWheelInputService } from './board-wheel-input.service';
 export class BoardMoveService {
   private store = inject(Store);
   #wheelInput = inject(BoardWheelInputService);
+  #interactionMode = inject(InteractionModeService);
   public move$!: Observable<Point>;
   public mouseMove$!: Observable<Point>;
   public mouseDown$!: Observable<MouseEvent>;
@@ -67,11 +69,17 @@ export class BoardMoveService {
       share(),
     );
 
-    // Panning with the mouse is right-button drag (or space held). Left-button
-    // drag on the empty board is a rubber-band selection, handled elsewhere.
+    // Panning with the mouse is right-button drag (or space held), or a
+    // left-button drag while the "move" tool is active. A left-button drag in
+    // "select" mode is a rubber-band selection, handled elsewhere.
     this.move$ = this.mouseDown$.pipe(
       withLatestFrom(this.store.select(boardPageFeature.selectPanInProgress)),
-      filter(([event, panInProgress]) => event.button === 2 || panInProgress),
+      filter(
+        ([event, panInProgress]) =>
+          event.button === 2 ||
+          panInProgress ||
+          (event.button === 0 && this.#interactionMode.mode() === 'move'),
+      ),
       switchMap(() => {
         return this.mouseMove$.pipe(
           pairwise(),

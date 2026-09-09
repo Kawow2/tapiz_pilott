@@ -7,6 +7,14 @@
   width: 100vw;
   cursor: var(--default-cursor, auto);
 
+  &.move-mode {
+    cursor: grab;
+  }
+
+  &.move-mode:active {
+    cursor: grabbing;
+  }
+
   &.node-selection-disabled,
   &.readonly {
     tapiz-nodes {
