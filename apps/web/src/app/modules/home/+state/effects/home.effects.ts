@@ -117,7 +117,11 @@ export const createBoard$ = createEffect(
     return actions$.pipe(
       ofType(HomeActions.createBoard),
       mergeMap((action) => {
-        return boardApiService.createBoard(action.name, action.teamId);
+        return boardApiService.createBoard(
+          action.name,
+          action.teamId,
+          action.templateId,
+        );
       }),
       tap((result) => {
         sessionStorage.setItem('new-board', result.id);

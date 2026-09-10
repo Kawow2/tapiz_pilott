@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod/v4';
-import { BoardUser } from '@tapiz/board-commons';
+import { BoardUser, getBoardTemplate } from '@tapiz/board-commons';
 import {
   boardAdminProcedure,
   boardMemberProcedure,
@@ -21,6 +21,7 @@ export const boardRouter = router({
       z.object({
         name: z.string().min(1).max(255),
         teamId: z.string().uuid().optional(),
+        templateId: z.string().max(64).optional(),
       }),
     )
     .mutation(async (req) => {
@@ -47,10 +48,14 @@ export const boardRouter = router({
         }
       }
 
+      const template = req.input.templateId
+        ? getBoardTemplate(req.input.templateId)
+        : undefined;
+
       const newBoard = await db.board.createBoard(
         req.input.name,
         req.ctx.user.sub,
-        [],
+        template ? template.nodes() : [],
         team?.id ?? null,
       );
 

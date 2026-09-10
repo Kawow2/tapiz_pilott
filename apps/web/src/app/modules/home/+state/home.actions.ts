@@ -19,7 +19,11 @@ export const HomeActions = createActionGroup({
     'Init boards page': emptyProps(),
     'Remove board': props<{ id: BoardUser['id'] }>(),
     'Leave board': props<{ id: BoardUser['id'] }>(),
-    'Create board': props<{ name: string; teamId?: Team['id'] }>(),
+    'Create board': props<{
+      name: string;
+      teamId?: Team['id'];
+      templateId?: string;
+    }>(),
     'Duplicate board': props<{ id: BoardUser['id'] }>(),
     'Duplicate board success': props<{ board: BoardUser }>(),
     'Remove account': emptyProps(),
