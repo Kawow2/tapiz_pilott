@@ -41,8 +41,14 @@ export class BoardApiService {
     );
   }
 
-  createBoard(board: BoardUser['name'], teamId?: Team['id']) {
-    return from(this.trpc.board.create.mutate({ name: board, teamId }));
+  createBoard(
+    board: BoardUser['name'],
+    teamId?: Team['id'],
+    templateId?: string,
+  ) {
+    return from(
+      this.trpc.board.create.mutate({ name: board, teamId, templateId }),
+    );
   }
 
   getBoard(boardId: string) {
