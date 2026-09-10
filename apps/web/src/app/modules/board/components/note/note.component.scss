@@ -152,21 +152,53 @@ textarea {
   text-align: center;
 }
 
-.comments {
-  background-color: var(--white);
-  color: var(--gray-80);
-  border-radius: 10px;
+.comment-button {
+  position: absolute;
+  z-index: 3;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary-color-button-bg, #1e254b);
+  color: #fff;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  font-weight: bold;
-  padding: 0 5px;
-  gap: 5px;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0.85;
+  transition: opacity 0.1s ease;
+  // Outside the note, top-right corner, just above the right "+" button.
+  inset-inline-end: -56px;
+  inset-block-start: 0;
+
+  &:hover {
+    opacity: 1;
+  }
 
   mat-icon {
-    inline-size: 13px;
-    block-size: 13px;
-    font-size: 13px;
+    inline-size: 22px;
+    block-size: 22px;
+    font-size: 22px;
   }
+}
+
+.comment-count {
+  position: absolute;
+  inset-block-start: -2px;
+  inset-inline-end: -2px;
+  min-inline-size: 18px;
+  block-size: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--white, #fff);
+  color: var(--gray-80, #333);
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .emoji {
