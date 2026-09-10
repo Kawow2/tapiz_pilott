@@ -9,12 +9,15 @@
   (dragging)="onDrag()">
   <div class="inner">
     <div class="top-info">
-      @if (comments()) {
+      @if (focus() || comments()) {
         <button
           type="button"
-          class="comments"
+          class="comments no-drag"
+          title="Commenter la note"
           (click)="openComments()">
-          {{ comments() }}
+          @if (comments()) {
+            {{ comments() }}
+          }
 
           <mat-icon>comments</mat-icon>
         </button>
