@@ -45,6 +45,12 @@ export class BoardDragDirective {
       relativePosition: this.#store.select(boardPageFeature.selectPosition),
       draggableIds: (triggerNode: string) => {
         const node = this.#boardFacade.getNode(triggerNode);
+
+        // A locked node cannot be moved.
+        if (node && this.#isNodeLocked(triggerNode)) {
+          return [];
+        }
+
         if (
           node &&
           (isPanel(node) || isGroup(node)) &&
@@ -81,10 +87,12 @@ export class BoardDragDirective {
 
           const nodeIds = nodesInside.map((node) => node.id);
 
-          return [...nodeIds, ...this.#focusIds()];
+          return [...nodeIds, ...this.#focusIds()].filter(
+            (id) => !this.#isNodeLocked(id),
+          );
         }
 
-        return this.#focusIds();
+        return this.#focusIds().filter((id) => !this.#isNodeLocked(id));
       },
       nodes: () => {
         return this.#boardFacade.get();
@@ -128,5 +136,11 @@ export class BoardDragDirective {
         }
       },
     });
+  }
+
+  #isNodeLocked(id: string): boolean {
+    const node = this.#boardFacade.getNode(id);
+
+    return !!(node?.content as { locked?: boolean } | undefined)?.locked;
   }
 }

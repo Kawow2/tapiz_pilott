@@ -1,0 +1,33 @@
+.bar {
+  position: fixed;
+  z-index: var(--board-tools-layer);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--primary-color-background, #fff);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.lock {
+  inline-size: 36px;
+  block-size: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--grey-80, #333);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s ease;
+}
+
+.lock:hover {
+  background: var(--grey-20, #eee);
+}
+
+.lock.locked {
+  color: var(--primary-color, #1e254b);
+}

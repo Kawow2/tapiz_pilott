@@ -10,6 +10,8 @@ export const LayerValidator = z.union([z.literal(0), z.literal(1)]);
 export const CommonBoardValidation = {
   position: z.object(PositionValidation),
   layer: LayerValidator,
+  // Generic per-node position lock: a locked node cannot be dragged.
+  locked: z.boolean().optional(),
 };
 
 export const SizeValidator = {
