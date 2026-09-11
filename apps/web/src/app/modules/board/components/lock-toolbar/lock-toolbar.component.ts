@@ -74,10 +74,13 @@ export class LockToolbarComponent {
     const zoom = this.#zoom();
     const pan = this.#boardPosition();
     const barWidth = 44;
+    // Notes show a colour palette above them; sit above it so the lock stays
+    // visible. Other nodes just clear their own top edge.
+    const topOffset = node.type === 'note' ? 132 : 56;
 
     return {
       left: nodePosition.x * zoom + pan.x + (width * zoom) / 2 - barWidth / 2,
-      top: nodePosition.y * zoom + pan.y - 52,
+      top: nodePosition.y * zoom + pan.y - topOffset,
     };
   });
 
