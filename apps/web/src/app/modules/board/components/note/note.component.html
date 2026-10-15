@@ -9,17 +9,6 @@
   (dragging)="onDrag()">
   <div class="inner">
     <div class="top-info">
-      @if (comments()) {
-        <button
-          type="button"
-          class="comments"
-          (click)="openComments()">
-          {{ comments() }}
-
-          <mat-icon>comments</mat-icon>
-        </button>
-      }
-
       @if (votes() > 0) {
         <div class="vote">
           {{ votes() }}
@@ -80,6 +69,20 @@
     }
   </div>
 </tapiz-node-space>
+
+@if (focus() || comments()) {
+  <button
+    type="button"
+    class="comment-button no-drag"
+    title="Commenter la note"
+    (mousedown)="$event.stopPropagation()"
+    (click)="openComments()">
+    <mat-icon>comments</mat-icon>
+    @if (comments()) {
+      <span class="comment-count">{{ comments() }}</span>
+    }
+  </button>
+}
 
 @if (showQuickAdd()) {
   <button

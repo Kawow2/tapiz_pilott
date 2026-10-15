@@ -84,11 +84,16 @@ export class NodeSpaceComponent implements AfterViewInit {
   dropped = output();
   dragging = output();
 
+  // A locked node cannot be dragged, resized or rotated.
+  #locked = computed(
+    () => !!(this.node().content as { locked?: boolean }).locked,
+  );
+
   @ViewChild('drag')
   drag!: ElementRef<HTMLElement>;
 
   get preventDrag() {
-    return !this.enabled() || !this.draggable();
+    return !this.enabled() || !this.draggable() || this.#locked();
   }
 
   get position() {
@@ -108,11 +113,11 @@ export class NodeSpaceComponent implements AfterViewInit {
   }
 
   isResizable(node: TuNode<unknown>): node is TuNode<Resizable> {
-    return this.resize();
+    return this.resize() && !this.#locked();
   }
 
   isRotable(node: TuNode<unknown>): node is TuNode<Rotatable> {
-    return this.rotate();
+    return this.rotate() && !this.#locked();
   }
 
   ngAfterViewInit(): void {
