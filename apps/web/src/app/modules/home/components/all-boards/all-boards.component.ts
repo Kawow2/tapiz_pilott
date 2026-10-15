@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { explicitEffect } from 'ngxtension/explicit-effect';
 import { InfiniteScrollBoardsComponent } from '../infinite-scroll-boards/infinite-scroll-boards.component';
 import { EmptyBoardsComponent } from '../empty-boards/empty-boards.component';
+import { BoardTemplatesComponent } from '../board-templates/board-templates.component';
 import { SortBoard } from '@tapiz/board-commons';
 
 @Component({
@@ -26,6 +27,7 @@ import { SortBoard } from '@tapiz/board-commons';
       <tapiz-board-list-header [showCreate]="!!boards().length">
         <h1>Boards</h1>
       </tapiz-board-list-header>
+      <tapiz-board-templates />
       @if (boards().length) {
         <tapiz-board-list
           [boards]="boards()"
@@ -44,6 +46,7 @@ import { SortBoard } from '@tapiz/board-commons';
     MatButtonModule,
     EmptyBoardsComponent,
     InfiniteScrollBoardsComponent,
+    BoardTemplatesComponent,
   ],
 })
 export class AllBoardsComponent {
