@@ -10,6 +10,7 @@ import { Note, TuNode } from '@tapiz/board-commons';
 import { BoardActions } from '@tapiz/board-commons/actions/board.actions';
 import { colorPickerSwatches } from '@tapiz/ui/color-picker';
 import { boardPageFeature } from '../../reducers/boardPage.reducer';
+import { BoardFacade } from '../../../../services/board-facade.service';
 
 // Colour palette shown above a selected note (like the shape toolbar), so the
 // note background can be recoloured on a single click.
@@ -72,6 +73,8 @@ import { boardPageFeature } from '../../reducers/boardPage.reducer';
 })
 export class NoteColorToolbarComponent {
   #store = inject(Store);
+  #boardFacade = inject(BoardFacade);
+  #focusIds = this.#store.selectSignal(boardPageFeature.selectFocusId);
   #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
   #boardPosition = this.#store.selectSignal(boardPageFeature.selectPosition);
 
@@ -95,19 +98,26 @@ export class NoteColorToolbarComponent {
   }
 
   setColor(color: string) {
+    // Recolour every selected note (multi-selection), not just this one.
+    const focusIds = this.#focusIds();
+    const ids = focusIds.includes(this.node().id)
+      ? this.#boardFacade
+          .nodes()
+          .filter((node) => node.type === 'note' && focusIds.includes(node.id))
+          .map((node) => node.id)
+      : [this.node().id];
+
     this.#store.dispatch(
       BoardActions.batchNodeActions({
         history: true,
-        actions: [
-          {
-            op: 'patch',
-            data: {
-              id: this.node().id,
-              type: 'note',
-              content: { color },
-            },
+        actions: ids.map((id) => ({
+          op: 'patch' as const,
+          data: {
+            id,
+            type: 'note',
+            content: { color },
           },
-        ],
+        })),
       }),
     );
   }

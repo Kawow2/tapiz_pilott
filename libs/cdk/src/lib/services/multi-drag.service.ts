@@ -34,6 +34,9 @@ interface SetupConfig {
   zoom: Observable<number>;
   relativePosition: Observable<Point>;
   nodes: () => TuNode[];
+  // Optional edge magnet: given the dragged elements' tentative positions,
+  // returns an offset to apply to all of them (e.g. to stick edges together).
+  snap?: (elements: { id: string; position: Point }[]) => Point;
   move: (
     elements: {
       draggable: Draggable;
@@ -334,6 +337,30 @@ export class MultiDragService {
           },
         };
       });
+
+    if (setUpConfig.snap && !event.ctrlKey && dragResult.length) {
+      const offset = setUpConfig.snap(
+        dragResult.map((it) => ({ id: it.draggable.id, position: it.position })),
+      );
+
+      if (offset.x || offset.y) {
+        dragResult.forEach((it) => {
+          it.position = {
+            x: it.position.x + offset.x,
+            y: it.position.y + offset.y,
+          };
+
+          const dragElement = this.#dragElements.get(it.draggable.id);
+
+          if (dragElement) {
+            this.#dragElements.set(it.draggable.id, {
+              ...dragElement,
+              final: it.position,
+            });
+          }
+        });
+      }
+    }
 
     this.#setUpConfig?.move(dragResult);
   }
