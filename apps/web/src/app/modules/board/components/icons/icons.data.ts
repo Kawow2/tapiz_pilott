@@ -1,83 +1,12 @@
-import {
-  ArrowRight,
-  ArrowLeft,
-  ArrowUp,
-  ArrowDown,
-  Check,
-  X,
-  Plus,
-  Minus,
-  Star,
-  Heart,
-  ThumbsUp,
-  ThumbsDown,
-  Flag,
-  Bookmark,
-  Bell,
-  TriangleAlert,
-  CircleAlert,
-  Info,
-  CircleHelp,
-  Lightbulb,
-  Zap,
-  Target,
-  Rocket,
-  Trophy,
-  Award,
-  Smile,
-  Frown,
-  Meh,
-  MessageCircle,
-  Mail,
-  Phone,
-  Calendar,
-  Clock,
-  User,
-  Users,
-  House,
-  Settings,
-  Search,
-  Lock,
-  Eye,
-  Trash2,
-  Pencil,
-  Pin,
-  Link,
-  Folder,
-  File,
-  Image,
-  Cloud,
-  Sun,
-  Moon,
-  Coffee,
-  Gift,
-  TrendingUp,
-  TrendingDown,
-  Bug,
-  Wrench,
-  Shield,
-  Key,
-  MapPin,
-  Globe,
-  Book,
-  Clipboard,
-  List,
-  Tag,
-  Download,
-  Upload,
-  Share2,
-  Send,
-  Play,
-  Pause,
-  CircleCheck,
-  CircleX,
-} from 'lucide-angular';
+import * as Lucide from 'lucide-angular';
 
 // Lucide icons are exposed as an array of [tagName, attributes] tuples.
-type LucideIconNode = ReadonlyArray<readonly [string, Record<string, string | number>]>;
+type LucideIconNode = ReadonlyArray<
+  readonly [string, Record<string, string | number>]
+>;
 
-function toSvg(node: unknown): string {
-  const children = (node as LucideIconNode)
+function toSvg(node: LucideIconNode): string {
+  const children = node
     .map(([tag, attrs]) => {
       const serializedAttrs = Object.entries(attrs)
         .filter(([key]) => key !== 'key')
@@ -96,77 +25,50 @@ export interface BoardIcon {
   svg: string;
 }
 
-export const boardIcons: BoardIcon[] = [
-  { name: 'arrow right', svg: toSvg(ArrowRight) },
-  { name: 'arrow left', svg: toSvg(ArrowLeft) },
-  { name: 'arrow up', svg: toSvg(ArrowUp) },
-  { name: 'arrow down', svg: toSvg(ArrowDown) },
-  { name: 'check', svg: toSvg(Check) },
-  { name: 'close x', svg: toSvg(X) },
-  { name: 'plus add', svg: toSvg(Plus) },
-  { name: 'minus', svg: toSvg(Minus) },
-  { name: 'star', svg: toSvg(Star) },
-  { name: 'heart', svg: toSvg(Heart) },
-  { name: 'thumbs up', svg: toSvg(ThumbsUp) },
-  { name: 'thumbs down', svg: toSvg(ThumbsDown) },
-  { name: 'flag', svg: toSvg(Flag) },
-  { name: 'bookmark', svg: toSvg(Bookmark) },
-  { name: 'bell', svg: toSvg(Bell) },
-  { name: 'warning triangle alert', svg: toSvg(TriangleAlert) },
-  { name: 'alert circle', svg: toSvg(CircleAlert) },
-  { name: 'info', svg: toSvg(Info) },
-  { name: 'question help', svg: toSvg(CircleHelp) },
-  { name: 'idea lightbulb', svg: toSvg(Lightbulb) },
-  { name: 'zap lightning', svg: toSvg(Zap) },
-  { name: 'target', svg: toSvg(Target) },
-  { name: 'rocket', svg: toSvg(Rocket) },
-  { name: 'trophy', svg: toSvg(Trophy) },
-  { name: 'award medal', svg: toSvg(Award) },
-  { name: 'smile happy', svg: toSvg(Smile) },
-  { name: 'frown sad', svg: toSvg(Frown) },
-  { name: 'meh neutral', svg: toSvg(Meh) },
-  { name: 'message comment', svg: toSvg(MessageCircle) },
-  { name: 'mail email', svg: toSvg(Mail) },
-  { name: 'phone', svg: toSvg(Phone) },
-  { name: 'calendar', svg: toSvg(Calendar) },
-  { name: 'clock time', svg: toSvg(Clock) },
-  { name: 'user', svg: toSvg(User) },
-  { name: 'users team', svg: toSvg(Users) },
-  { name: 'home house', svg: toSvg(House) },
-  { name: 'settings gear', svg: toSvg(Settings) },
-  { name: 'search', svg: toSvg(Search) },
-  { name: 'lock', svg: toSvg(Lock) },
-  { name: 'eye view', svg: toSvg(Eye) },
-  { name: 'trash delete', svg: toSvg(Trash2) },
-  { name: 'edit pencil', svg: toSvg(Pencil) },
-  { name: 'pin', svg: toSvg(Pin) },
-  { name: 'link', svg: toSvg(Link) },
-  { name: 'folder', svg: toSvg(Folder) },
-  { name: 'file document', svg: toSvg(File) },
-  { name: 'image picture', svg: toSvg(Image) },
-  { name: 'cloud', svg: toSvg(Cloud) },
-  { name: 'sun', svg: toSvg(Sun) },
-  { name: 'moon', svg: toSvg(Moon) },
-  { name: 'coffee', svg: toSvg(Coffee) },
-  { name: 'gift', svg: toSvg(Gift) },
-  { name: 'trending up growth', svg: toSvg(TrendingUp) },
-  { name: 'trending down', svg: toSvg(TrendingDown) },
-  { name: 'bug', svg: toSvg(Bug) },
-  { name: 'wrench tool', svg: toSvg(Wrench) },
-  { name: 'shield security', svg: toSvg(Shield) },
-  { name: 'key', svg: toSvg(Key) },
-  { name: 'map pin location', svg: toSvg(MapPin) },
-  { name: 'globe world', svg: toSvg(Globe) },
-  { name: 'book', svg: toSvg(Book) },
-  { name: 'clipboard', svg: toSvg(Clipboard) },
-  { name: 'list', svg: toSvg(List) },
-  { name: 'tag label', svg: toSvg(Tag) },
-  { name: 'download', svg: toSvg(Download) },
-  { name: 'upload', svg: toSvg(Upload) },
-  { name: 'share', svg: toSvg(Share2) },
-  { name: 'send', svg: toSvg(Send) },
-  { name: 'play', svg: toSvg(Play) },
-  { name: 'pause', svg: toSvg(Pause) },
-  { name: 'check circle done', svg: toSvg(CircleCheck) },
-  { name: 'x circle cancel', svg: toSvg(CircleX) },
-];
+// Turn a Lucide export name (PascalCase, e.g. "ArrowRight", "Trash2") into a
+// searchable label (e.g. "arrow right", "trash 2").
+function toSearchName(exportName: string): string {
+  return exportName
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/([A-Za-z])(\d+)/g, '$1 $2')
+    .toLowerCase()
+    .trim();
+}
+
+// A Lucide icon export is an array of [tag, attrs] tuples; everything else in
+// the module (the Angular module, injection tokens, helpers) is skipped.
+function isIconNode(value: unknown): value is LucideIconNode {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      (child) =>
+        Array.isArray(child) &&
+        typeof child[0] === 'string' &&
+        typeof child[1] === 'object' &&
+        child[1] !== null,
+    )
+  );
+}
+
+// The full Lucide icon set, generated once, de-duplicated by rendered SVG,
+// sorted and searchable by name.
+export const boardIcons: BoardIcon[] = (() => {
+  const seen = new Set<string>();
+
+  return Object.entries(Lucide as unknown as Record<string, unknown>)
+    .filter(([name, value]) => /^[A-Z]/.test(name) && isIconNode(value))
+    .map(([name, value]) => ({
+      name: toSearchName(name),
+      svg: toSvg(value as LucideIconNode),
+    }))
+    .filter((icon) => {
+      if (seen.has(icon.svg)) {
+        return false;
+      }
+
+      seen.add(icon.svg);
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+})();
