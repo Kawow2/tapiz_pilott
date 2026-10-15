@@ -69,6 +69,7 @@ import { DrawingStore } from '../components/drawing/drawing.store';
 import { DrawingOptionsComponent } from '../components/drawing-options';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { CommentsComponent } from '../components/comments/comments.component';
+import { LockToolbarComponent } from '../components/lock-toolbar/lock-toolbar.component';
 import { NodesActions } from '../services/nodes-actions';
 import { ConfigService } from '../../../services/config.service';
 import { FileUploadService } from '../../../services/file-upload.service';
@@ -121,6 +122,7 @@ import { PingWallComponent } from '../components/ping/ping-wall.component';
     ContextMenuComponent,
     BoardContextMenuComponent,
     CommentsComponent,
+    LockToolbarComponent,
     DemoIntroComponent,
     ZoomControlComponent,
     BoardNodesAlignComponent,

@@ -20,6 +20,7 @@ import { Store } from '@ngrx/store';
 import { BoardActions } from '@tapiz/board-commons/actions/board.actions';
 import { BoardFacade } from '../../../../services/board-facade.service';
 import { boardPageFeature } from '../../reducers/boardPage.reducer';
+import { getNodeSize } from '../../../../shared/node-size';
 
 @Component({
   selector: 'tapiz-comments',
@@ -41,7 +42,10 @@ import { boardPageFeature } from '../../reducers/boardPage.reducer';
   ],
   template: `
     @if (commentsStore.parentNodeId(); as parentNodeId) {
-      <div class="wrapper">
+      <div
+        class="wrapper"
+        [style.left.px]="panelPosition().left"
+        [style.top.px]="panelPosition().top">
         <div class="header">
           <button
             mat-icon-button
@@ -83,6 +87,41 @@ export class CommentsComponent {
   #injector = inject(Injector);
   #boardFacade = inject(BoardFacade);
   userId = this.#store.selectSignal(boardPageFeature.selectUserId);
+  #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
+  #position = this.#store.selectSignal(boardPageFeature.selectPosition);
+
+  // Anchor the panel just to the right of the note it belongs to (following the
+  // board zoom/pan), flipping to the left if it would overflow the viewport.
+  panelPosition = computed(() => {
+    const parentId = this.commentsStore.parentNodeId();
+    const node = this.#boardFacade.nodes().find((it) => it.id === parentId);
+
+    if (!node) {
+      return { left: 16, top: 70 };
+    }
+
+    const { width } = getNodeSize(node);
+    const position = (node.content as { position: { x: number; y: number } })
+      .position;
+    const zoom = this.#zoom();
+    const pan = this.#position();
+    const gap = 24;
+    const panelWidth = 400;
+
+    const nodeScreenX = position.x * zoom + pan.x;
+    const nodeScreenY = position.y * zoom + pan.y;
+
+    let left = nodeScreenX + width * zoom + gap;
+
+    if (left + panelWidth > window.innerWidth - 16) {
+      left = nodeScreenX - panelWidth - gap;
+    }
+
+    return {
+      left: Math.max(16, left),
+      top: Math.min(Math.max(16, nodeScreenY), window.innerHeight - 200),
+    };
+  });
 
   commentWrapper =
     viewChild.required<ElementRef<HTMLElement>>('commentWrapper');
