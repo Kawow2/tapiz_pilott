@@ -16,6 +16,7 @@ import { getNodeSize } from '../../../../shared/node-size';
 import { NodesActions } from '../../services/nodes-actions';
 import { BoardActions } from '@tapiz/board-commons/actions/board.actions';
 import { BoardPageActions } from '../../actions/board-page.actions';
+import { edgeSnapOffset } from './edge-snap';
 
 @Directive({
   selector: '[tapizBoardDragDirective]',
@@ -28,6 +29,7 @@ export class BoardDragDirective {
   #interactionMode = inject(InteractionModeService);
 
   readonly #focusIds = this.#store.selectSignal(boardPageFeature.selectFocusId);
+  readonly #zoom = this.#store.selectSignal(boardPageFeature.selectZoom);
 
   constructor() {
     // Elements can only be dragged in "select" mode; in "move" mode a drag pans
@@ -96,6 +98,35 @@ export class BoardDragDirective {
       },
       nodes: () => {
         return this.#boardFacade.get();
+      },
+      snap: (elements) => {
+        const movingIds = new Set(elements.map((it) => it.id));
+        const sized = (node: BoardTuNode, position = node.content.position) => {
+          const { width, height } = getNodeSize(node);
+
+          return width && height
+            ? { x: position.x, y: position.y, width, height }
+            : null;
+        };
+
+        const moving = elements
+          .map((it) => {
+            const node = this.#boardFacade.getNode(it.id);
+            return node && isBoardTuNode(node) ? sized(node, it.position) : null;
+          })
+          .filter((it) => !!it);
+
+        const others = this.#boardFacade
+          .get()
+          .filter(
+            (node): node is BoardTuNode =>
+              isBoardTuNode(node) && !movingIds.has(node.id),
+          )
+          .map((node) => sized(node))
+          .filter((it) => !!it);
+
+        // ~8 screen pixels, whatever the zoom level.
+        return edgeSnapOffset(moving, others, 8 / this.#zoom());
       },
       move: (elements) => {
         const nodes = elements.map(({ draggable, position }) => {
