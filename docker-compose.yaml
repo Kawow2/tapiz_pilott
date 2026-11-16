@@ -67,7 +67,10 @@ services:
     # already forwards /api and /socket.io to the API. When you set it, also
     # point FRONTEND_URL and API_URL at that host: the API only accepts
     # WebSocket connections from FRONTEND_URL. A dockerized proxy must share a
-    # network with this container: `docker network connect tapiz_default <proxy>`.
+    # network with this container: `pnpm docker:bridge` (run by
+    # `pnpm start:docker`) attaches it to Docker's built-in `bridge` network,
+    # where a proxy started with plain `docker run` lives. It can't be declared
+    # here: Docker rejects the service alias Compose adds on `bridge`.
     environment:
       - VIRTUAL_HOST=${VIRTUAL_HOST:-}
       - VIRTUAL_PORT=80

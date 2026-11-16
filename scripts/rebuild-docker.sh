@@ -9,6 +9,7 @@ function rebuild_web() {
     docker rmi $WEB_IMAGE
     docker-compose build web
     docker-compose up -d
+    node scripts/docker-connect-bridge.js --no-env-file
 }
 
 function rebuild_api() {
@@ -17,6 +18,7 @@ function rebuild_api() {
     docker rmi $API_IMAGE
     docker-compose build api
     docker-compose up -d
+    node scripts/docker-connect-bridge.js --no-env-file
 }
 
 function rebuild_all() {
@@ -25,6 +27,7 @@ function rebuild_all() {
     docker rmi $WEB_IMAGE $API_IMAGE
     docker-compose build
     docker-compose up -d
+    node scripts/docker-connect-bridge.js --no-env-file
 }
 
 # Parse command line arguments
