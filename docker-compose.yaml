@@ -62,6 +62,15 @@ services:
       - api
     ports:
       - '${FRONTEND_PORT:-4300}:80'
+    # Optional DNS name served by an nginx-proxy style reverse proxy (e.g.
+    # tapiz.onesys.dock). The proxy targets this nginx on port 80, which
+    # already forwards /api and /socket.io to the API. When you set it, also
+    # point FRONTEND_URL and API_URL at that host: the API only accepts
+    # WebSocket connections from FRONTEND_URL. A dockerized proxy must share a
+    # network with this container: `docker network connect tapiz_default <proxy>`.
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-}
+      - VIRTUAL_PORT=80
 
 volumes:
   pgdata:
