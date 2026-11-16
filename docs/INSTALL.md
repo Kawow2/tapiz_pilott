@@ -33,5 +33,15 @@ Follow these steps to set up Tapiz using Docker:
    docker-compose up -d
    ```
 
+   If a reverse proxy started with plain `docker run` (nginx-proxy style, see
+   `VIRTUAL_HOST` in `.env.example`) must serve Tapiz, also attach the web
+   container to Docker's `bridge` network after every `up`:
+
+   ```bash
+   pnpm docker:bridge
+   ```
+
+   `pnpm start:docker` runs both steps for you.
+
 5. **Access the Application**  
    Your Tapiz application will be available at [http://localhost:4300](http://localhost:4300).
